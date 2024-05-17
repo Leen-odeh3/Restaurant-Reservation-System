@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+
 namespace RestaurantReservation.Db.Entities
 {
     public class Customer
