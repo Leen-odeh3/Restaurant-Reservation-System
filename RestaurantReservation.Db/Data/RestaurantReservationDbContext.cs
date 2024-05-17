@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using RestaurantReservation.Db.Entities;
+using RestaurantReservation.Db.Extensions;
 
 namespace RestaurantReservation.Db.Data
 {
@@ -17,6 +18,10 @@ namespace RestaurantReservation.Db.Data
                 optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
             }
 
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Seed();
         }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
