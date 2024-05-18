@@ -32,5 +32,27 @@ namespace RestaurantReservation.Db.Repositories
             return ordersWithMenuItems;
         }
 
+        public async Task<List<MenuItem>> ListOrderedMenuItems(int reservationId)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.Orders)
+                    .ThenInclude(o => o.OrderItems)
+                        .ThenInclude(oi => oi.MenuItem)
+                .FirstOrDefaultAsync(r => r.Id == reservationId);
+
+            if (reservation is null)
+            {
+                throw new NotFoundException<Reservation>($"Reservation with id {reservationId} not found.");
+            }
+
+            var orderedMenuItems = reservation.Orders
+                .SelectMany(o => o.OrderItems)
+                .Select(oi => oi.MenuItem)
+                .Distinct()
+                .ToList();
+
+            return orderedMenuItems;
+        }
+
     }
 }
