@@ -22,6 +22,8 @@ namespace RestaurantReservation.Db.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Seed();
+            modelBuilder.Entity<ReservationDetails>().HasNoKey().ToView("View_ReservationsDetails");
+            modelBuilder.Entity<EmployeeDetails>().HasNoKey().ToView("View_EmployeesDetails");
         }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
@@ -31,5 +33,9 @@ namespace RestaurantReservation.Db.Data
         public DbSet<Restaurant> Restaurants { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Table> Tables { get; set; }
+        public DbSet<ReservationDetails> ReservationsDetails { get; set; }
+
+        public DbSet<EmployeeDetails> EmployeesDetails { get; set; }
+
     }
 }
