@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Extensions;
+using RestaurantReservation.Db.ViewModels;
 
 namespace RestaurantReservation.Db.Data
 {
@@ -22,8 +23,8 @@ namespace RestaurantReservation.Db.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Seed();
-            modelBuilder.Entity<ReservationDetails>().HasNoKey().ToView("View_ReservationsDetails");
-            modelBuilder.Entity<EmployeeDetails>().HasNoKey().ToView("View_EmployeesDetails");
+            modelBuilder.Entity<ReservationDetails>().HasNoKey().ToView("ReservationsDetailsView");
+            modelBuilder.Entity<EmployeeDetails>().HasNoKey().ToView("EmployeesDetailsView");
         }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
