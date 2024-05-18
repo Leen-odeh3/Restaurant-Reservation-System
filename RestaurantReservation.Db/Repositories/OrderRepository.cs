@@ -54,5 +54,19 @@ namespace RestaurantReservation.Db.Repositories
             return orderedMenuItems;
         }
 
+
+        public async Task<decimal> CalculateAverageOrderAmount(int employeeId)
+        {
+            var orders = await _context.Orders
+                .Where(o => o.EmployeeId == employeeId)
+                .ToListAsync();
+
+            decimal totalOrderAmount = orders.Sum(o => o.TotalAmount);
+
+            decimal averageOrderAmount = orders.Count > 0 ? totalOrderAmount / orders.Count : 0;
+
+            return averageOrderAmount;
+        }
+
     }
 }
