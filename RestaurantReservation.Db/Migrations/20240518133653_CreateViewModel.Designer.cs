@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RestaurantReservation.Db.Data;
 
 namespace RestaurantReservation.Db.Migrations
 {
     [DbContext(typeof(RestaurantReservationDbContext))]
-    partial class RestaurantReservationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240518133653_CreateViewModel")]
+    partial class CreateViewModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -253,7 +255,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 1,
                             EmployeeId = 5,
-                            OrderDate = new DateTime(2024, 5, 17, 16, 45, 10, 281, DateTimeKind.Local).AddTicks(3690),
+                            OrderDate = new DateTime(2024, 5, 17, 16, 36, 52, 133, DateTimeKind.Local).AddTicks(4241),
                             ReservationId = 1,
                             TotalAmount = 45m
                         },
@@ -261,7 +263,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 2,
                             EmployeeId = 3,
-                            OrderDate = new DateTime(2024, 5, 16, 16, 45, 10, 284, DateTimeKind.Local).AddTicks(6707),
+                            OrderDate = new DateTime(2024, 5, 16, 16, 36, 52, 137, DateTimeKind.Local).AddTicks(3900),
                             ReservationId = 2,
                             TotalAmount = 30m
                         },
@@ -269,7 +271,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 3,
                             EmployeeId = 3,
-                            OrderDate = new DateTime(2024, 5, 15, 16, 45, 10, 284, DateTimeKind.Local).AddTicks(6751),
+                            OrderDate = new DateTime(2024, 5, 15, 16, 36, 52, 137, DateTimeKind.Local).AddTicks(4002),
                             ReservationId = 3,
                             TotalAmount = 60m
                         },
@@ -277,7 +279,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 4,
                             EmployeeId = 5,
-                            OrderDate = new DateTime(2024, 5, 14, 16, 45, 10, 284, DateTimeKind.Local).AddTicks(6755),
+                            OrderDate = new DateTime(2024, 5, 14, 16, 36, 52, 137, DateTimeKind.Local).AddTicks(4016),
                             ReservationId = 4,
                             TotalAmount = 22m
                         },
@@ -285,7 +287,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 5,
                             EmployeeId = 3,
-                            OrderDate = new DateTime(2024, 5, 13, 16, 45, 10, 284, DateTimeKind.Local).AddTicks(6758),
+                            OrderDate = new DateTime(2024, 5, 13, 16, 36, 52, 137, DateTimeKind.Local).AddTicks(4022),
                             ReservationId = 5,
                             TotalAmount = 80m
                         });
