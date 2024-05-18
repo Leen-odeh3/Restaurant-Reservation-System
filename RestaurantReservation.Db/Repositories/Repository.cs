@@ -1,15 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RestaurantReservation.Db.Abstracts;
 using RestaurantReservation.Db.Data;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RestaurantReservation.Db.Repositories
 {
-    public class Repository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : class
     {
         protected readonly RestaurantReservationDbContext _context;
 
