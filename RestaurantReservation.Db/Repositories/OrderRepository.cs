@@ -20,7 +20,7 @@ namespace RestaurantReservation.Db.Repositories
                 .Include(r => r.Orders)
                     .ThenInclude(o => o.OrderItems)
                         .ThenInclude(oi => oi.MenuItem)
-                .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
+                .FirstOrDefaultAsync(r => r.Id == reservationId);
 
             if (reservation is null)
             {
@@ -38,7 +38,7 @@ namespace RestaurantReservation.Db.Repositories
                 .Include(r => r.Orders)
                     .ThenInclude(o => o.OrderItems)
                         .ThenInclude(oi => oi.MenuItem)
-                .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
+                .FirstOrDefaultAsync(r => r.Id == reservationId);
 
             if (reservation is null)
             {

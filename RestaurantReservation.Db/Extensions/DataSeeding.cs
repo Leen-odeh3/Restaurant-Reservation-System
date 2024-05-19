@@ -23,11 +23,11 @@ namespace RestaurantReservation.Db.Extensions
         {
             return new List<Customer>
                 {
-                    new Customer { CustomerId = 1, FirstName = "John", LastName = "Doe", Email = "John.doe@example.com", CustomerPhoneNumber = "123-456-7890" },
-                    new Customer { CustomerId = 2, FirstName = "Jane", LastName = "Doe", Email = "Jane.doe@example.com", CustomerPhoneNumber = "987-654-3210" },
-                    new Customer { CustomerId = 3, FirstName = "Alice", LastName = "Smith", Email = "Alice.smith@example.com", CustomerPhoneNumber = "555-123-4567" },
-                    new Customer { CustomerId = 4, FirstName = "Bob", LastName = "Smith", Email = "Bob.smith@example.com", CustomerPhoneNumber = "555-987-6543" },
-                    new Customer { CustomerId = 5, FirstName = "Charlie", LastName = "Brown", Email = "Charlie.brown@example.com", CustomerPhoneNumber = "555-555-5555" }
+                    new Customer { Id = 1, FirstName = "John", LastName = "Doe", Email = "John.doe@example.com", CustomerPhoneNumber = "123-456-7890" },
+                    new Customer { Id = 2, FirstName = "Jane", LastName = "Doe", Email = "Jane.doe@example.com", CustomerPhoneNumber = "987-654-3210" },
+                    new Customer { Id = 3, FirstName = "Alice", LastName = "Smith", Email = "Alice.smith@example.com", CustomerPhoneNumber = "555-123-4567" },
+                    new Customer { Id = 4, FirstName = "Bob", LastName = "Smith", Email = "Bob.smith@example.com", CustomerPhoneNumber = "555-987-6543" },
+                    new Customer { Id = 5, FirstName = "Charlie", LastName = "Brown", Email = "Charlie.brown@example.com", CustomerPhoneNumber = "555-555-5555" }
                 };
         }
 
@@ -74,11 +74,11 @@ namespace RestaurantReservation.Db.Extensions
         {
             return new List<Reservation>
                 {
-                    new Reservation { ReservationId = 1, ReservationDate = DateTime.Today.AddDays(3), PartySize = 4, CustomerId = 1, RestaurantId = 1, TableId = 1 },
-                    new Reservation { ReservationId = 2, ReservationDate = DateTime.Today.AddDays(4), PartySize = 2, CustomerId = 2, RestaurantId = 1, TableId = 2 },
-                    new Reservation { ReservationId = 3, ReservationDate = DateTime.Today.AddDays(5), PartySize = 6, CustomerId = 3, RestaurantId = 2, TableId = 3 },
-                    new Reservation { ReservationId = 4, ReservationDate = DateTime.Today.AddDays(6), PartySize = 3, CustomerId = 4, RestaurantId = 2, TableId = 4 },
-                    new Reservation { ReservationId = 5, ReservationDate = DateTime.Today.AddDays(7), PartySize = 5, CustomerId = 5, RestaurantId = 3, TableId = 5 }
+                    new Reservation { Id = 1, ReservationDate = DateTime.Today.AddDays(3), PartySize = 4, CustomerId = 1, RestaurantId = 1, TableId = 1 },
+                    new Reservation { Id = 2, ReservationDate = DateTime.Today.AddDays(4), PartySize = 2, CustomerId = 2, RestaurantId = 1, TableId = 2 },
+                    new Reservation { Id = 3, ReservationDate = DateTime.Today.AddDays(5), PartySize = 6, CustomerId = 3, RestaurantId = 2, TableId = 3 },
+                    new Reservation { Id = 4, ReservationDate = DateTime.Today.AddDays(6), PartySize = 3, CustomerId = 4, RestaurantId = 2, TableId = 4 },
+                    new Reservation { Id = 5, ReservationDate = DateTime.Today.AddDays(7), PartySize = 5, CustomerId = 5, RestaurantId = 3, TableId = 5 }
                 };
         }
 
