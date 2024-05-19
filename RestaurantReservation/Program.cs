@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using RestaurantReservation.Db;
 using RestaurantReservation.Db.Data;
 using System;
@@ -37,14 +38,27 @@ namespace RestaurantReservation
                 }
             }
 
+            /*   using (var dbContext = new RestaurantReservationDbContext())
+               {
+                   var restaurantId = 3; 
+                   decimal totalRevenue = dbContext.CalculateRestaurantTotalRevenue(restaurantId);
+
+                   Console.WriteLine($"Total revenue for restaurant with ID {restaurantId}: {totalRevenue:C}");
+               }
+            */
+
          /*   using (var dbContext = new RestaurantReservationDbContext())
             {
-                var restaurantId = 3; 
-                decimal totalRevenue = dbContext.CalculateRestaurantTotalRevenue(restaurantId);
+                int partySizeThreshold = 5; 
+                var customers = dbContext.Customers.FromSqlRaw("EXECUTE FindCustomersWithPartySizeGreaterThan {0}", partySizeThreshold).ToList();
 
-                Console.WriteLine($"Total revenue for restaurant with ID {restaurantId}: {totalRevenue:C}");
+                foreach (var customer in customers)
+                {
+                    Console.WriteLine($"Customer ID: {customer.CustomerId}, Name: {customer.FirstName} {customer.LastName}");
+                }
             }
          */
+
             var serviceProvider = new ServiceCollection()
                .AddInfrastructureDependencies()
                .BuildServiceProvider();
