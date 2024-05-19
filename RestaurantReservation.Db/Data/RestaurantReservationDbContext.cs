@@ -40,6 +40,7 @@ namespace RestaurantReservation.Db.Data
                 .ThenInclude(r => r.Orders)!
                 .ThenInclude(o => o.OrderItems)
                 .ThenInclude(oi => oi.MenuItem)
+                .AsSplitQuery()
                 .FirstOrDefault(r => r.RestaurantId == restaurantId);
 
             if (restaurant is null)
@@ -47,10 +48,12 @@ namespace RestaurantReservation.Db.Data
                 throw new NotFoundException<Restaurant>($"Restaurant with id {restaurantId} not found.");
             }
 
-            var totalRevenue = restaurant.Reservations!
-                .SelectMany(r => r.Orders!)
-                .SelectMany(o => o.OrderItems)
-                .Sum(m => m.MenuItem.Price * m.Quantity);
+
+            var totalRevenue = restaurant?.Reservations
+                ?.SelectMany(r => r.Orders)
+                ?.SelectMany(o => o.OrderItems)
+                ?.Sum(m => m.MenuItem.Price * m.Quantity) ?? 0;
+
 
             return totalRevenue;
         }
