@@ -12,7 +12,7 @@ namespace RestaurantReservation.Db.Data
             if (!optionsBuilder.IsConfigured)
             {
                 var config = new ConfigurationBuilder()
-                    .AddJsonFile("C:\\Users\\hp\\Desktop\\New folder\\RestaurantReservation\\appsettings.json")
+                    .AddJsonFile("\\appsettings.json")
                     .Build();
 
                 optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
