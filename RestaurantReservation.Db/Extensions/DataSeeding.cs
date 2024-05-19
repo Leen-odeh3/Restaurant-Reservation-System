@@ -74,11 +74,11 @@ namespace RestaurantReservation.Db.Extensions
         {
             return new List<Reservation>
                 {
-                    new Reservation { Id = 1, ReservationDate = DateTime.Today.AddDays(3), PartySize = 4, CustomerId = 1, RestaurantId = 1, TableId = 1 },
-                    new Reservation { Id = 2, ReservationDate = DateTime.Today.AddDays(4), PartySize = 2, CustomerId = 2, RestaurantId = 1, TableId = 2 },
-                    new Reservation { Id = 3, ReservationDate = DateTime.Today.AddDays(5), PartySize = 6, CustomerId = 3, RestaurantId = 2, TableId = 3 },
-                    new Reservation { Id = 4, ReservationDate = DateTime.Today.AddDays(6), PartySize = 3, CustomerId = 4, RestaurantId = 2, TableId = 4 },
-                    new Reservation { Id = 5, ReservationDate = DateTime.Today.AddDays(7), PartySize = 5, CustomerId = 5, RestaurantId = 3, TableId = 5 }
+                    new Reservation { ReservationId = 1, ReservationDate = DateTime.Today.AddDays(3), PartySize = 4, CustomerId = 1, RestaurantId = 1, TableId = 1 },
+                    new Reservation { ReservationId = 2, ReservationDate = DateTime.Today.AddDays(4), PartySize = 2, CustomerId = 2, RestaurantId = 1, TableId = 2 },
+                    new Reservation { ReservationId = 3, ReservationDate = DateTime.Today.AddDays(5), PartySize = 6, CustomerId = 3, RestaurantId = 2, TableId = 3 },
+                    new Reservation { ReservationId = 4, ReservationDate = DateTime.Today.AddDays(6), PartySize = 3, CustomerId = 4, RestaurantId = 2, TableId = 4 },
+                    new Reservation { ReservationId = 5, ReservationDate = DateTime.Today.AddDays(7), PartySize = 5, CustomerId = 5, RestaurantId = 3, TableId = 5 }
                 };
         }
 
