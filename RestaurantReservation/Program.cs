@@ -37,8 +37,14 @@ namespace RestaurantReservation
                 }
             }
 
+         /*   using (var dbContext = new RestaurantReservationDbContext())
+            {
+                var restaurantId = 3; 
+                decimal totalRevenue = dbContext.CalculateRestaurantTotalRevenue(restaurantId);
 
-
+                Console.WriteLine($"Total revenue for restaurant with ID {restaurantId}: {totalRevenue:C}");
+            }
+         */
             var serviceProvider = new ServiceCollection()
                .AddInfrastructureDependencies()
                .BuildServiceProvider();
