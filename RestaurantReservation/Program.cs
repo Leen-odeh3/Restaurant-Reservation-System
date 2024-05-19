@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RestaurantReservation.Db;
-using System;
 
 namespace RestaurantReservation
 {
@@ -8,8 +7,6 @@ namespace RestaurantReservation
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
             var serviceProvider = new ServiceCollection()
                .AddInfrastructureDependencies()
                .BuildServiceProvider();
