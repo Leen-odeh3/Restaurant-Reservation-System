@@ -10,6 +10,6 @@ namespace RestaurantReservation.Db.Entities
         public string LastName { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
-        public ICollection<Reservation>? Reservations { get; set; } = new List<Reservation>();
+        public virtual ICollection<Reservation>? Reservations { get; set; }
     }
 }

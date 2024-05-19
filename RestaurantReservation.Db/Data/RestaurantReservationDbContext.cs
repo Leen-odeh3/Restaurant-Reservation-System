@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using RestaurantReservation.Db.Configuration;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Extensions;
 
@@ -22,6 +23,13 @@ namespace RestaurantReservation.Db.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Seed();
+            new EmployeeConfiguration().Configure(modelBuilder.Entity<Employee>());
+            new OrderConfiguration().Configure(modelBuilder.Entity<Order>());
+            new OrderItemConfiguration().Configure(modelBuilder.Entity<OrderItem>());
+            new TableConfiguration().Configure(modelBuilder.Entity<Table>());
+            new ReservationConfiguration().Configure(modelBuilder.Entity<Reservation>());
+            new RestaurantConfiguration().Configure(modelBuilder.Entity<Restaurant>());
+            new MenuItemConfiguration().Configure(modelBuilder.Entity<MenuItem>());
         }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
