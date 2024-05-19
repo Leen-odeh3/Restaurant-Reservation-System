@@ -24,7 +24,7 @@ namespace RestaurantReservation.Db.Data
         {
             modelBuilder.Seed();
             modelBuilder.Entity<ReservationDetails>().HasNoKey().ToView("ReservationsDetailsView");
-            modelBuilder.Entity<EmployeeDetails>().HasNoKey().ToView("EmployeesDetailsView");
+            modelBuilder.Entity<EmployeeDetails>().HasNoKey().ToView("EmployeeDetailsView");
         }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Employee> Employees { get; set; }
@@ -35,8 +35,7 @@ namespace RestaurantReservation.Db.Data
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Table> Tables { get; set; }
         public DbSet<ReservationDetails> ReservationsDetailsView { get; set; }
-
-        // public DbSet<EmployeeDetails> EmployeesDetails { get; set; }
+        public DbSet<EmployeeDetails> EmployeeDetailsView { get; set; }
 
     }
 }
