@@ -13,7 +13,7 @@ namespace RestaurantReservation.Db.Data
             if (!optionsBuilder.IsConfigured)
             {
                 var config = new ConfigurationBuilder()
-                    .AddJsonFile("C:\\Users\\hp\\Desktop\\New folder\\RestaurantReservation\\appsettings.json")
+                    .AddJsonFile("C:\\Users\\hp\\Desktop\\C#\\RestaurantReservation\\appsettings.json")
                     .Build();
 
                 optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
@@ -34,9 +34,9 @@ namespace RestaurantReservation.Db.Data
         public DbSet<Restaurant> Restaurants { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Table> Tables { get; set; }
-        public DbSet<ReservationDetails> ReservationsDetails { get; set; }
+        public DbSet<ReservationDetails> ReservationsDetailsView { get; set; }
 
-        public DbSet<EmployeeDetails> EmployeesDetails { get; set; }
+        // public DbSet<EmployeeDetails> EmployeesDetails { get; set; }
 
     }
 }
