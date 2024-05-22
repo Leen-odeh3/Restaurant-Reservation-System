@@ -8,7 +8,7 @@ public class Employee
     public int Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    [Column(TypeName = "nvarchar")]
+    [Column(TypeName = "int")]
     public EmployeePosition Position { get; set; }
     public int? RestaurantId { get; set; }
     public Restaurant Restaurant { get; set; }
