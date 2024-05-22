@@ -18,7 +18,7 @@ namespace RestaurantReservation.Db.Repositories
         public async Task<List<Employee>> ListManagers()
         {
             return await _context.Employees
-                .Where(e => e.Position == EmployeePosition.Manager)
+                .Where(e => e.Position == "Manager")
                 .ToListAsync();
 
         }

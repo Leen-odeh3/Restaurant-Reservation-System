@@ -21,7 +21,7 @@ namespace RestaurantReservation.Db.Repositories
             .ThenInclude(o => o.OrderItems)
             .ThenInclude(oi => oi.MenuItem)
             .AsSplitQuery() 
-            .FirstOrDefaultAsync(r => r.Id == reservationId);
+            .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
 
             if (reservation is null)
             {
@@ -40,7 +40,7 @@ namespace RestaurantReservation.Db.Repositories
                  .ThenInclude(o => o.OrderItems)
                  .ThenInclude(oi => oi.MenuItem)
                  .AsSplitQuery()
-                 .FirstOrDefaultAsync(r => r.Id == reservationId);
+                 .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
 
             if (reservation is null)
             {

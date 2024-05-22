@@ -2,6 +2,6 @@
 
 namespace RestaurantReservation.Db.Abstracts;
 
-    public interface ICustomerRepository : IRepository<Customer>
-    {
-    }
+public interface ICustomerRepository : IRepository<Customer>
+{
+}
