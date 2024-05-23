@@ -11,6 +11,9 @@ namespace RestaurantReservation.Db.Data;
 
 public class RestaurantReservationDbContext : DbContext
 {
+    public RestaurantReservationDbContext(DbContextOptions options) : base(options)
+    {
+    }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
