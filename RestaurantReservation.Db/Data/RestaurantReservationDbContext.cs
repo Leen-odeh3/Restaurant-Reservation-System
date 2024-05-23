@@ -14,6 +14,10 @@ public class RestaurantReservationDbContext : DbContext
     public RestaurantReservationDbContext(DbContextOptions options) : base(options)
     {
     }
+    public RestaurantReservationDbContext()
+    {
+        
+    }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)

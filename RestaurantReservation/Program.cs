@@ -11,7 +11,7 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        using (var dbContext = new RestaurantReservationDbContext())
+      using (var dbContext = new RestaurantReservationDbContext())
         {
             var reservationsFromView = dbContext.ReservationsDetailsView.ToList();
 
