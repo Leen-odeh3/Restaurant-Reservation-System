@@ -23,7 +23,7 @@ public class RestaurantReservationDbContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             var config = new ConfigurationBuilder()
-                .AddJsonFile("C:\\Users\\hp\\Desktop\\C#\\RestaurantReservation\\appsettings.json")
+                .AddJsonFile("\\appsettings.json")
                 .Build();
 
             optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
