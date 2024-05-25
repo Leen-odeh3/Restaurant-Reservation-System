@@ -1,8 +1,8 @@
-﻿using RestaurantReservation.Db.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
 using RestaurantReservation.Db.Data;
-using RestaurantReservation.Db.Entities;
+using RestaurantReservation.Db.Repositories;
 using RestaurantReservation.Db.Enums;
-using Microsoft.EntityFrameworkCore;
+using RestaurantReservation.Db.Test.Helper;
 
 namespace RestaurantReservation.Db.Test.RepositoriesTest;
 
@@ -22,15 +22,19 @@ public class EmployeeRepositoryTest
     {
     }
 
+    private async Task<EmployeeRepository> GetInitializedRepository(RestaurantReservationDbContext context)
+    {
+        await TestDataSeeder.SeedEmployees(context);
+        return new EmployeeRepository(context);
+    }
+
     [Fact]
-    public async Task GetAll_ReturnAllEmployees()
+    public async Task GetAllAsync_ReturnsAllEmployees_WhenDatabaseHasData()
     {
         // Arrange
         using (var context = new RestaurantReservationDbContext(_options))
+        using (var repository = await GetInitializedRepository(context))
         {
-            var repository = new EmployeeRepository(context);
-            await LoadEmployeeData(context);
-
             // Act
             var employees = await repository.GetAllAsync();
 
@@ -41,14 +45,12 @@ public class EmployeeRepositoryTest
     }
 
     [Fact]
-    public async Task GetListManagers_FromEmployee_ReturnsListOfManagers()
+    public async Task ListManagers_ReturnsListOfManagers_WhenDatabaseHasData()
     {
         // Arrange
         using (var context = new RestaurantReservationDbContext(_options))
+        using (var repository = await GetInitializedRepository(context))
         {
-            var repository = new EmployeeRepository(context);
-            await LoadEmployeeData(context); 
-
             // Act
             var managers = await repository.ListManagers();
 
@@ -60,43 +62,21 @@ public class EmployeeRepositoryTest
         }
     }
 
-    private async Task LoadEmployeeData(RestaurantReservationDbContext context)
+    [Fact]
+    public async Task DeleteEmployee_RemovesEmployeeFromDatabase()
     {
-        var employees = new[]
+        // Arrange
+        using (var context = new RestaurantReservationDbContext(_options))
+        using (var repository = await GetInitializedRepository(context))
         {
-            new Employee { FirstName = "Ella", LastName = "Fitzgerald", Position = EmployeePosition.Manager, RestaurantId = 1 },
-            new Employee { FirstName = "Louis", LastName = "Armstrong", Position = EmployeePosition.Chef, RestaurantId = 1 },
-            new Employee { FirstName = "Billie", LastName = "Holiday", Position = EmployeePosition.Waiter, RestaurantId = 1 },
-            new Employee { FirstName = "Charlie", LastName = "Parker", Position = EmployeePosition.Manager, RestaurantId = 2 },
-            new Employee { FirstName = "Dizzy", LastName = "Gillespie", Position = EmployeePosition.Cashier, RestaurantId = 2 }
-        };
+            var employeeToDelete = await repository.GetByIdAsync(1);
 
-        await context.AddRangeAsync(employees);
-        await context.SaveChangesAsync();
-    }
-}
+            // Act
+            await repository.DeleteAsync(employeeToDelete);
 
-public class DatabaseFixture : IDisposable
-{
-    public DatabaseFixture()
-    {
-        Options = new DbContextOptionsBuilder<RestaurantReservationDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDatabase")
-            .Options;
-
-        using (var context = new RestaurantReservationDbContext(Options))
-        {
-            context.Database.EnsureCreated();
-        }
-    }
-
-    public DbContextOptions<RestaurantReservationDbContext> Options { get; }
-
-    public void Dispose()
-    {
-        using (var context = new RestaurantReservationDbContext(Options))
-        {
-            context.Database.EnsureDeleted();
+            // Assert
+            var remainingEmployees = await repository.GetAllAsync();
+            Assert.DoesNotContain(remainingEmployees, e => e.Id == 1);
         }
     }
 }

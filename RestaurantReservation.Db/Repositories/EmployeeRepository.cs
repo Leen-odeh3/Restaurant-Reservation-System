@@ -3,13 +3,14 @@ using RestaurantReservation.Db.Abstracts;
 using RestaurantReservation.Db.Data;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace RestaurantReservation.Db.Repositories
 {
-    public class EmployeeRepository : Repository<Employee>, IEmployeeRepository
+    public class EmployeeRepository : Repository<Employee>, IEmployeeRepository, IDisposable
     {
         private readonly RestaurantReservationDbContext _context;
 
@@ -23,6 +24,9 @@ namespace RestaurantReservation.Db.Repositories
                 .Where(e => e.Position == EmployeePosition.Manager)
                 .ToListAsync();
         }
-
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
     }
 }
