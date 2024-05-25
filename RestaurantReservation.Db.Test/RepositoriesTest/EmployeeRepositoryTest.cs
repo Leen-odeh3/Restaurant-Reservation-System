@@ -5,7 +5,6 @@ using RestaurantReservation.Db.Enums;
 using RestaurantReservation.Db.Test.Helper;
 
 namespace RestaurantReservation.Db.Test.RepositoriesTest;
-
 public class EmployeeRepositoryTest
 {
     private readonly DbContextOptions<RestaurantReservationDbContext> _options;
@@ -79,4 +78,29 @@ public class EmployeeRepositoryTest
             Assert.DoesNotContain(remainingEmployees, e => e.Id == 1);
         }
     }
+
+    [Fact]
+    public async Task UpdateEmployee_UpdatesEmployeeInDatabase()
+    {
+        // Arrange
+        using (var context = new RestaurantReservationDbContext(_options))
+        {
+            var repository = new EmployeeRepository(context);
+            await TestDataSeeder.SeedEmployees(context);
+
+            var employeeToUpdate = await repository.GetByIdAsync(1);
+            employeeToUpdate.FirstName = "leen";
+            employeeToUpdate.LastName = "odeh";
+
+            // Act
+            await repository.UpdateAsync(employeeToUpdate);
+
+            // Assert
+            var updatedEmployee = await repository.GetByIdAsync(1);
+            Assert.NotNull(updatedEmployee);
+            Assert.Equal("leen", updatedEmployee.FirstName);
+            Assert.Equal("odeh", updatedEmployee.LastName);
+        }
+    }
+
 }
