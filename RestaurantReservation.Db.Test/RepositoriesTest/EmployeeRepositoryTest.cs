@@ -39,7 +39,7 @@ public class EmployeeRepositoryTest
 
             // Assert
             Assert.NotEmpty(employees);
-            Assert.Equal(5, employees.Count);
+            Assert.Equal(10, employees.Count);
         }
     }
 
@@ -56,7 +56,7 @@ public class EmployeeRepositoryTest
             // Assert
             Assert.NotNull(managers);
             Assert.NotEmpty(managers);
-            Assert.Equal(4, managers.Count);
+            Assert.Equal(6, managers.Count);
             Assert.All(managers, m => Assert.Equal(EmployeePosition.Manager, m.Position));
         }
     }
