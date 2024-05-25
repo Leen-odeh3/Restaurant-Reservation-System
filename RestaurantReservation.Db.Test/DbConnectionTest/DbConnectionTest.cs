@@ -1,22 +1,23 @@
 ﻿using RestaurantReservation.Db.Data;
-using RestaurantReservation.Db.Test.Helper;
 
-namespace RestaurantReservation.Db.Test.DbConnectionTest;
-public class DbConnectionTest
+namespace RestaurantReservation.Db.Test.DbConnectionTest
 {
-    [Fact]
-    public void check_Connection()
+    public class DbConnectionTest
     {
-        RestaurantReservationDbContext context = new RestaurantReservationDbContext(DatabaseConnectionTest.GetConnection());
-        
-        if (context is not null) { 
+        [Fact]
+        public void Check_Connection()
+        {
+            // Arrange
+            using var context = new RestaurantReservationDbContext();
 
+            // Act
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
-        }
 
-        Assert.NotNull(context);
-        Assert.NotEmpty(context.Reservations);
-        Assert.NotEmpty(context.Orders);
+            // Assert
+            Assert.NotNull(context);
+            Assert.NotEmpty(context.Reservations);
+            Assert.NotEmpty(context.Orders);
+        }
     }
 }
