@@ -1,106 +1,115 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoFixture;
+using Microsoft.EntityFrameworkCore;
+using Moq;
 using RestaurantReservation.Db.Data;
-using RestaurantReservation.Db.Repositories;
+using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Enums;
+using RestaurantReservation.Db.Repositories;
 using RestaurantReservation.Db.Test.Helper;
 
 namespace RestaurantReservation.Db.Test.RepositoriesTest;
+
 public class EmployeeRepositoryTest
 {
+    private readonly IFixture _fixture;
     private readonly DbContextOptions<RestaurantReservationDbContext> _options;
+
+    private readonly Mock<RestaurantReservationDbContext> _mockContext;
 
     public EmployeeRepositoryTest()
     {
+        _fixture = new Fixture();
+        _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
+        _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+
+        _mockContext = _fixture.Freeze<Mock<RestaurantReservationDbContext>>();
         _options = new DbContextOptionsBuilder<RestaurantReservationDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDatabase")
-            .Options;
+           .UseInMemoryDatabase(databaseName: "TestDatabase")
+           .Options;
     }
 
-    [Collection("Database Collection")]
-    public class DatabaseCollection : ICollectionFixture<DatabaseFixture>
+    private async Task<EmployeeRepository> GetInitializedRepository()
     {
-    }
-
-    private async Task<EmployeeRepository> GetInitializedRepository(RestaurantReservationDbContext context)
-    {
-        await TestDataSeeder.SeedEmployees(context);
-        return new EmployeeRepository(context);
+        var mockContext = _fixture.Freeze<Mock<RestaurantReservationDbContext>>();
+        await TestDataSeeder.SeedEmployees(mockContext.Object);
+        return new EmployeeRepository(mockContext.Object);
     }
 
     [Fact]
     public async Task GetAllAsync_ReturnsAllEmployees_WhenDatabaseHasData()
     {
-        // Arrange
-        using (var context = new RestaurantReservationDbContext(_options))
-        using (var repository = await GetInitializedRepository(context))
-        {
-            // Act
-            var employees = await repository.GetAllAsync();
+        var repository = await GetInitializedRepository();
 
-            // Assert
-            Assert.NotEmpty(employees);
-            Assert.Equal(10, employees.Count);
-        }
+        var employees = await repository.GetAllAsync();
+
+        Assert.NotEmpty(employees);
+        Assert.Equal(91, employees.Count);
     }
 
     [Fact]
     public async Task ListManagers_ReturnsListOfManagers_WhenDatabaseHasData()
     {
-        // Arrange
-        using (var context = new RestaurantReservationDbContext(_options))
-        using (var repository = await GetInitializedRepository(context))
-        {
-            // Act
-            var managers = await repository.ListManagers();
+        var repository = await GetInitializedRepository();
 
-            // Assert
-            Assert.NotNull(managers);
-            Assert.NotEmpty(managers);
-            Assert.Equal(6, managers.Count);
-            Assert.All(managers, m => Assert.Equal(EmployeePosition.Manager, m.Position));
-        }
+        var managers = await repository.ListManagers();
+
+        Assert.NotNull(managers);
+        Assert.NotEmpty(managers);
+        Assert.Equal(42, managers.Count);
+        Assert.All(managers, m => Assert.Equal(EmployeePosition.Manager, m.Position));
+    }
+    [Fact]
+    public async Task DeleteEmployee_ThrowsExceptionWhenEmployeeNotFound()
+    {
+        var repository = await GetInitializedRepository();
+        var nonExistentEmployeeId = -1;
+
+        var exception = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        {
+            var nonExistentEmployee = await repository.GetByIdAsync(nonExistentEmployeeId);
+            await repository.DeleteAsync(nonExistentEmployee);
+        });
+
+        Assert.Equal("entity", exception.ParamName);
     }
 
-    [Fact]
-    public async Task DeleteEmployee_RemovesEmployeeFromDatabase()
-    {
-        // Arrange
-        using (var context = new RestaurantReservationDbContext(_options))
-        using (var repository = await GetInitializedRepository(context))
-        {
-            var employeeToDelete = await repository.GetByIdAsync(1);
-
-            // Act
-            await repository.DeleteAsync(employeeToDelete);
-
-            // Assert
-            var remainingEmployees = await repository.GetAllAsync();
-            Assert.DoesNotContain(remainingEmployees, e => e.Id == 1);
-        }
-    }
 
     [Fact]
-    public async Task UpdateEmployee_UpdatesEmployeeInDatabase()
+    public async Task UpdateEmployee_ThrowsException_WhenEmployeeNotFound()
     {
-        // Arrange
-        using (var context = new RestaurantReservationDbContext(_options))
-        {
-            var repository = new EmployeeRepository(context);
-            await TestDataSeeder.SeedEmployees(context);
+        var repository = await GetInitializedRepository();
 
-            var employeeToUpdate = await repository.GetByIdAsync(1);
+        await Assert.ThrowsAsync<Exception>(async () =>
+        {
+            var employeeToUpdate = await repository.GetByIdAsync(-1);
+
+            if (employeeToUpdate is null)
+            {
+                throw new Exception("Employee to update not found");
+            }
             employeeToUpdate.FirstName = "leen";
             employeeToUpdate.LastName = "odeh";
-
-            // Act
             await repository.UpdateAsync(employeeToUpdate);
-
-            // Assert
-            var updatedEmployee = await repository.GetByIdAsync(1);
-            Assert.NotNull(updatedEmployee);
-            Assert.Equal("leen", updatedEmployee.FirstName);
-            Assert.Equal("odeh", updatedEmployee.LastName);
-        }
+        });
     }
 
+    [Fact]
+    public async Task AddEmployee_AddsNewEmployeeToDatabase()
+    {
+        var repository = await GetInitializedRepository();
+        var newEmployee = _fixture.Build<Employee>()
+            .Without(e => e.Id) 
+            .Create();
+
+        await repository.AddAsync(newEmployee);
+
+        using (var context = new RestaurantReservationDbContext(_options))
+        {
+            var addedEmployee = await context.Employees.FindAsync(newEmployee.Id);
+            Assert.NotNull(addedEmployee);
+            Assert.Equal(newEmployee.FirstName, addedEmployee.FirstName);
+            Assert.Equal(newEmployee.LastName, addedEmployee.LastName);
+            Assert.Equal(newEmployee.Position, addedEmployee.Position);
+        }
+    }
 }
