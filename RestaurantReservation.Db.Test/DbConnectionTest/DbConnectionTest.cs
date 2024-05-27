@@ -1,4 +1,5 @@
 ﻿using RestaurantReservation.Db.Data;
+using RestaurantReservation.Db.Entities;
 
 namespace RestaurantReservation.Db.Test.DbConnectionTest
 {
@@ -18,6 +19,8 @@ namespace RestaurantReservation.Db.Test.DbConnectionTest
             Assert.NotNull(context);
             Assert.NotEmpty(context.Reservations);
             Assert.NotEmpty(context.Orders);
+            Assert.True(context.Set<Customer>().Any());
+
         }
     }
 }
