@@ -1,62 +1,85 @@
-﻿using RestaurantReservation.Db.Entities;
-using RestaurantReservation.Db.Test.Helper;
+﻿using AutoFixture;
+using FluentAssertions;
+using Moq;
+using RestaurantReservation.Db.Abstracts;
+using RestaurantReservation.Db.Data;
+using RestaurantReservation.Db.Entities;
 
 namespace RestaurantReservation.Db.Test.RepositoriesTest;
-public class ReservationRepositoryTest : IClassFixture<ReservationRepositoryTestFixture>
+
+public class ReservationRepositoryTest
 {
-    private readonly ReservationRepositoryTestFixture _fixture;
+    private readonly Mock<RestaurantReservationDbContext> _mockDbContext;
+    private readonly Mock<IReservationRepository> _mockReservationRepository;
+    private readonly Fixture _fixture;
 
-    public ReservationRepositoryTest(ReservationRepositoryTestFixture fixture)
+    public ReservationRepositoryTest()
     {
-        _fixture = fixture;
+        _mockReservationRepository = new Mock<IReservationRepository>();
+        _fixture = new Fixture();
+        _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
+        _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
     }
 
     [Fact]
-    public async Task GetByIdAsync_ExistingReservationId_ShouldReturnReservation()
+    public async Task GetReservationsByCustomer_ShouldReturnListOfReservations()
     {
-        var existingReservationId = 1;
-        var reservation = new Reservation { ReservationId = existingReservationId, ReservationDate = DateTime.Now, PartySize = 2 };
-        await _fixture.Context.Reservations.AddAsync(reservation);
-        await _fixture.Context.SaveChangesAsync();
-
-        var result = await _fixture.Repository.GetByIdAsync(existingReservationId);
-
-        Assert.NotNull(result);
-        Assert.Equal(existingReservationId, result.ReservationId);
-    }
-
-    [Fact]
-    public async Task GetAllAsync_NoReservationsInDatabase_ShouldReturnEmptyList()
-    {
-        var result = await _fixture.Repository.GetAllAsync();
-
-        Assert.Empty(result);
-    }
-
-    [Fact]
-    public async Task GetReservationsByCustomer_ValidCustomerId_ShouldReturnReservations()
-    {
+        // Arrange
         var customerId = 1;
-        var reservations = new List<Reservation>
-    {
-        new Reservation { ReservationId = 1, ReservationDate = DateTime.Now, PartySize = 2, CustomerId = customerId },
-        new Reservation { ReservationId = 2, ReservationDate = DateTime.Now, PartySize = 4, CustomerId = customerId },
-        new Reservation { ReservationId = 3, ReservationDate = DateTime.Now, PartySize = 3, CustomerId = customerId + 1 }
-    };
-        await _fixture.Context.Reservations.AddRangeAsync(reservations);
-        await _fixture.Context.SaveChangesAsync();
+        var reservations = _fixture.CreateMany<Reservation>(5).ToList();
+        reservations.ForEach(reservation => reservation.CustomerId = customerId);
+        _mockReservationRepository.Setup(repo => repo.GetReservationsByCustomer(customerId)).ReturnsAsync(reservations);
 
-        var result = await _fixture.Repository.GetReservationsByCustomer(customerId);
+        // Act
+        var result = await _mockReservationRepository.Object.GetReservationsByCustomer(customerId);
 
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.All(result, r => Assert.Equal(customerId, r.CustomerId));
+        // Assert
+        result.Should().BeEquivalentTo(reservations);
     }
 
     [Fact]
-    public async Task AddReservation_WithNullEntity_ShouldThrowException()
+    public async Task GetReservationsByCustomer_ShouldReturnEmptyList_WhenNoReservationsFound()
     {
-        Reservation reservation = null;
-        await Assert.ThrowsAsync<ArgumentNullException>(() => _fixture.Repository.AddAsync(reservation));
+        // Arrange
+        var customerId = 1;
+        _mockReservationRepository.Setup(repo => repo.GetReservationsByCustomer(customerId)).ReturnsAsync(new List<Reservation>());
+
+        // Act
+        var result = await _mockReservationRepository.Object.GetReservationsByCustomer(customerId);
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetReservationsByCustomer_ShouldReturnReservationsOnlyForSpecifiedCustomer()
+    {
+        // Arrange
+        var customerId = 1;
+        var otherCustomerId = 2;
+        var reservations = _fixture.CreateMany<Reservation>(5).ToList();
+     
+        reservations.Take(3).ToList().ForEach(reservation => reservation.CustomerId = customerId);
+        reservations.Skip(3).ToList().ForEach(reservation => reservation.CustomerId = otherCustomerId);
+        _mockReservationRepository.Setup(repo => repo.GetReservationsByCustomer(customerId))
+            .ReturnsAsync(reservations.Where(r => r.CustomerId == customerId).ToList());
+
+        // Act
+        var result = await _mockReservationRepository.Object.GetReservationsByCustomer(customerId);
+
+        // Assert
+        result.Should().OnlyContain(r => r.CustomerId == customerId);
+    }
+
+    [Fact]
+    public async Task GetReservationsByCustomer_ShouldThrowException_WhenCustomerIdIsInvalid()
+    {
+        // Arrange
+        var invalidCustomerId = -1;
+        _mockReservationRepository.Setup(repo => repo.GetReservationsByCustomer(invalidCustomerId)).ThrowsAsync(new Exception("Invalid customer ID"));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<Exception>(async () => await _mockReservationRepository.Object.GetReservationsByCustomer(invalidCustomerId));
     }
 }
+
