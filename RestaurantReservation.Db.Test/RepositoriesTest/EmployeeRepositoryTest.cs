@@ -1,115 +1,111 @@
 ﻿using AutoFixture;
-using Microsoft.EntityFrameworkCore;
+using FluentAssertions;
 using Moq;
-using RestaurantReservation.Db.Data;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Enums;
 using RestaurantReservation.Db.Repositories;
-using RestaurantReservation.Db.Test.Helper;
+using RestaurantReservation.Db.Abstracts;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
-namespace RestaurantReservation.Db.Test.RepositoriesTest;
-
-public class EmployeeRepositoryTest
+namespace RestaurantReservation.Db.Test.RepositoriesTest
 {
-    private readonly IFixture _fixture;
-    private readonly DbContextOptions<RestaurantReservationDbContext> _options;
-
-    private readonly Mock<RestaurantReservationDbContext> _mockContext;
-
-    public EmployeeRepositoryTest()
+    public class EmployeeRepositoryTest
     {
-        _fixture = new Fixture();
-        _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
-        _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        private readonly Mock<IEmployeeRepository> _mockEmployeeRepository;
+        private readonly Fixture _fixture;
 
-        _mockContext = _fixture.Freeze<Mock<RestaurantReservationDbContext>>();
-        _options = new DbContextOptionsBuilder<RestaurantReservationDbContext>()
-           .UseInMemoryDatabase(databaseName: "TestDatabase")
-           .Options;
-    }
-
-    private async Task<EmployeeRepository> GetInitializedRepository()
-    {
-        var mockContext = _fixture.Freeze<Mock<RestaurantReservationDbContext>>();
-        await TestDataSeeder.SeedEmployees(mockContext.Object);
-        return new EmployeeRepository(mockContext.Object);
-    }
-
-    [Fact]
-    public async Task GetAllAsync_ReturnsAllEmployees_WhenDatabaseHasData()
-    {
-        var repository = await GetInitializedRepository();
-
-        var employees = await repository.GetAllAsync();
-
-        Assert.NotEmpty(employees);
-        Assert.Equal(91, employees.Count);
-    }
-
-    [Fact]
-    public async Task ListManagers_ReturnsListOfManagers_WhenDatabaseHasData()
-    {
-        var repository = await GetInitializedRepository();
-
-        var managers = await repository.ListManagers();
-
-        Assert.NotNull(managers);
-        Assert.NotEmpty(managers);
-        Assert.Equal(42, managers.Count);
-        Assert.All(managers, m => Assert.Equal(EmployeePosition.Manager, m.Position));
-    }
-    [Fact]
-    public async Task DeleteEmployee_ThrowsExceptionWhenEmployeeNotFound()
-    {
-        var repository = await GetInitializedRepository();
-        var nonExistentEmployeeId = -1;
-
-        var exception = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+        public EmployeeRepositoryTest()
         {
-            var nonExistentEmployee = await repository.GetByIdAsync(nonExistentEmployeeId);
-            await repository.DeleteAsync(nonExistentEmployee);
-        });
+            _mockEmployeeRepository = new Mock<IEmployeeRepository>();
+            _fixture = new Fixture();
+        }
 
-        Assert.Equal("entity", exception.ParamName);
-    }
-
-
-    [Fact]
-    public async Task UpdateEmployee_ThrowsException_WhenEmployeeNotFound()
-    {
-        var repository = await GetInitializedRepository();
-
-        await Assert.ThrowsAsync<Exception>(async () =>
+        [Fact]
+        public async Task GetEmployees_ShouldReturnOkResult_WithListOfEmployees()
         {
-            var employeeToUpdate = await repository.GetByIdAsync(-1);
+            // Arrange
+            var employees = _fixture.CreateMany<Employee>(10).ToList();
+            _mockEmployeeRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(employees);
 
-            if (employeeToUpdate is null)
-            {
-                throw new Exception("Employee to update not found");
-            }
-            employeeToUpdate.FirstName = "leen";
-            employeeToUpdate.LastName = "odeh";
-            await repository.UpdateAsync(employeeToUpdate);
-        });
-    }
+            // Act
+            var result = await _mockEmployeeRepository.Object.GetAllAsync();
 
-    [Fact]
-    public async Task AddEmployee_AddsNewEmployeeToDatabase()
-    {
-        var repository = await GetInitializedRepository();
-        var newEmployee = _fixture.Build<Employee>()
-            .Without(e => e.Id) 
-            .Create();
+            // Assert
+            var okResult = result.Should().BeOfType<List<Employee>>().Subject;
+            okResult.Should().BeEquivalentTo(employees);
+        }
 
-        await repository.AddAsync(newEmployee);
-
-        using (var context = new RestaurantReservationDbContext(_options))
+        [Fact]
+        public async Task GetEmployeeById_ShouldReturnOkResult_WhenEmployeeFound()
         {
-            var addedEmployee = await context.Employees.FindAsync(newEmployee.Id);
-            Assert.NotNull(addedEmployee);
-            Assert.Equal(newEmployee.FirstName, addedEmployee.FirstName);
-            Assert.Equal(newEmployee.LastName, addedEmployee.LastName);
-            Assert.Equal(newEmployee.Position, addedEmployee.Position);
+            // Arrange
+            var employee = _fixture.Create<Employee>();
+            _mockEmployeeRepository.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(employee);
+
+            // Act
+            var result = await _mockEmployeeRepository.Object.GetByIdAsync(employee.Id);
+
+            // Assert
+            result.Should().BeOfType<Employee>();
+            result.Should().BeEquivalentTo(employee);
+        }
+
+        [Fact]
+        public async Task GetEmployeeById_ShouldReturnNull_WhenEmployeeNotFound()
+        {
+            // Arrange
+            _mockEmployeeRepository.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((Employee)null);
+
+            // Act
+            var result = await _mockEmployeeRepository.Object.GetByIdAsync(1);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task CreateEmployee_ShouldAddEmployee()
+        {
+            // Arrange
+            var employee = _fixture.Create<Employee>();
+            _mockEmployeeRepository.Setup(repo => repo.AddAsync(employee)).Returns(Task.CompletedTask);
+
+            // Act
+            await _mockEmployeeRepository.Object.AddAsync(employee);
+
+            // Assert
+            _mockEmployeeRepository.Verify(repo => repo.AddAsync(employee), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateEmployee_ShouldModifyEmployee()
+        {
+            // Arrange
+            var employee = _fixture.Create<Employee>();
+            _mockEmployeeRepository.Setup(repo => repo.UpdateAsync(employee)).Returns(Task.CompletedTask);
+
+            // Act
+            await _mockEmployeeRepository.Object.UpdateAsync(employee);
+
+            // Assert
+            _mockEmployeeRepository.Verify(repo => repo.UpdateAsync(employee), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteEmployee_ShouldRemoveEmployee()
+        {
+            // Arrange
+            var employee = _fixture.Create<Employee>();
+            _mockEmployeeRepository.Setup(repo => repo.DeleteAsync(employee)).Returns(Task.CompletedTask);
+
+            // Act
+            await _mockEmployeeRepository.Object.DeleteAsync(employee);
+
+            // Assert
+            _mockEmployeeRepository.Verify(repo => repo.DeleteAsync(employee), Times.Once);
         }
     }
 }

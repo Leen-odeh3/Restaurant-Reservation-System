@@ -8,25 +8,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RestaurantReservation.Db.Repositories
+namespace RestaurantReservation.Db.Repositories;
+public class EmployeeRepository : Repository<Employee>, IEmployeeRepository, IDisposable
 {
-    public class EmployeeRepository : Repository<Employee>, IEmployeeRepository, IDisposable
-    {
-        private readonly RestaurantReservationDbContext _context;
+    private readonly RestaurantReservationDbContext _context;
 
-        public EmployeeRepository(RestaurantReservationDbContext context) : base(context)
-        {
-            _context = context;
-        }
-        public async Task<List<Employee>> ListManagers()
-        {
-            return await _context.Employees
-                .Where(e => e.Position == EmployeePosition.Manager)
-                .ToListAsync();
-        }
-        public void Dispose()
-        {
-            _context.Dispose();
-        }
+    public EmployeeRepository(RestaurantReservationDbContext context) : base(context)
+    {
+    }
+
+    public async Task<List<Employee>> ListManagers()
+    {
+        return await _context.Employees
+            .Where(e => e.Position == EmployeePosition.Manager)
+            .ToListAsync();
+    }
+    public void Dispose()
+    {
+        _context.Dispose();
     }
 }

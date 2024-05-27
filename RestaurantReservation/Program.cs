@@ -1,9 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RestaurantReservation.Db;
 using RestaurantReservation.Db.Data;
-using System;
-using System.Linq;
 
 namespace RestaurantReservation;
 
@@ -13,13 +10,13 @@ internal class Program
     {
       using (var dbContext = new RestaurantReservationDbContext())
         {
-            var reservationsFromView = dbContext.ReservationsDetailsView.ToList();
+           /* var reservationsFromView = dbContext.ReservationsDetailsView.ToList();
 
             foreach (var reservation in reservationsFromView)
             {
                 Console.WriteLine($"Reservation ID: {reservation.ReservationId}");
                 Console.WriteLine($"Reservation Date: {reservation.ReservationDate}");
-            }
+            }*/
 
             /*   var employeesWithRestaurantDetails = dbContext.EmployeeDetailsView.ToList();
 
