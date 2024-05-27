@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using RestaurantReservation.Db;
 
-namespace RestaurantReservation
-{
-    internal class Program
+namespace RestaurantReservation;
+    public class Program
     {
         static void Main(string[] args)
         {
@@ -12,4 +11,3 @@ namespace RestaurantReservation
                .BuildServiceProvider();
         }
     }
-}
