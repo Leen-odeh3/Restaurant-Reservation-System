@@ -12,7 +12,7 @@ public class OrderRepositoryTest
 {
     private readonly Mock<RestaurantReservationDbContext> _mockDbContext;
     private readonly Mock<IOrderRepository> _mockOrderRepository;
-    private readonly Fixture _fixture;
+    private readonly IFixture _fixture;
 
     public OrderRepositoryTest()
     {

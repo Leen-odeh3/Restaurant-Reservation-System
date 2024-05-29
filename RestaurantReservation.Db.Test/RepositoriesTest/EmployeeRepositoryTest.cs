@@ -1,130 +1,120 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using Moq;
+using Microsoft.EntityFrameworkCore;
+using RestaurantReservation.Db.Data;
 using RestaurantReservation.Db.Entities;
-using RestaurantReservation.Db.Abstracts;
 using RestaurantReservation.Db.Enums;
 using RestaurantReservation.Db.Repositories;
-using RestaurantReservation.Db.Data;
 
 namespace RestaurantReservation.Db.Test.RepositoriesTest;
-public class EmployeeRepositoryTest
+public class EmployeeRepositoryTest : IDisposable
 {
-    private readonly Mock<RestaurantReservationDbContext> _mockDbContext;
-    private readonly Mock<IEmployeeRepository> _mockEmployeeRepository;
-    private readonly Fixture _fixture;
-    private readonly EmployeeRepository _employeeRepository;
+    private readonly DbContextOptions<RestaurantReservationDbContext> _options;
+    private readonly RestaurantReservationDbContext _context;
+    private readonly EmployeeRepository _repository;
+    private readonly IFixture _fixture;
 
     public EmployeeRepositoryTest()
     {
-        _mockEmployeeRepository = new Mock<IEmployeeRepository>();
+        _options = new DbContextOptionsBuilder<RestaurantReservationDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        _context = new RestaurantReservationDbContext(_options);
+        _repository = new EmployeeRepository(_context);
         _fixture = new Fixture();
         _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
         _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-        _mockDbContext = new Mock<RestaurantReservationDbContext>();
     }
 
-     [Fact]
+    public void Dispose()
+    {
+        _context.Dispose();
+    }
+
+    [Fact]
     public async Task GetEmployees_ShouldReturnOkResult_WithListOfEmployees()
     {
-        // Arrange
         var employees = _fixture.CreateMany<Employee>(10).ToList();
-        _mockEmployeeRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(employees);
+        await _context.Employees.AddRangeAsync(employees);
+        await _context.SaveChangesAsync();
 
-        // Act
-        var result = await _mockEmployeeRepository.Object.GetAllAsync();
+        var result = await _repository.GetAllAsync();
 
-        // Assert
-        var okResult = result.Should().BeOfType<List<Employee>>().Subject;
-        okResult.Should().BeEquivalentTo(employees);
+        result.Should().BeEquivalentTo(employees);
     }
 
     [Fact]
     public async Task GetEmployeeById_ShouldReturnOkResult_WhenEmployeeFound()
     {
-        // Arrange
         var employee = _fixture.Create<Employee>();
-        _mockEmployeeRepository.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(employee);
+        await _context.Employees.AddAsync(employee);
+        await _context.SaveChangesAsync();
 
-        // Act
-        var result = await _mockEmployeeRepository.Object.GetByIdAsync(employee.Id);
+        var result = await _repository.GetByIdAsync(employee.Id);
 
-        // Assert
-        result.Should().BeOfType<Employee>();
         result.Should().BeEquivalentTo(employee);
     }
 
     [Fact]
     public async Task GetEmployeeById_ShouldReturnNull_WhenEmployeeNotFound()
     {
-        // Arrange
-        _mockEmployeeRepository.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((Employee)null);
+        var employeeId = 80;
 
-        // Act
-        var result = await _mockEmployeeRepository.Object.GetByIdAsync(1);
+        var result = await _repository.GetByIdAsync(employeeId);
 
-        // Assert
         result.Should().BeNull();
     }
 
     [Fact]
     public async Task CreateEmployee_ShouldAddEmployee()
     {
-        // Arrange
         var employee = _fixture.Create<Employee>();
-        _mockEmployeeRepository.Setup(repo => repo.AddAsync(employee)).Returns(Task.CompletedTask);
 
-        // Act
-        await _mockEmployeeRepository.Object.AddAsync(employee);
+        await _repository.AddAsync(employee);
 
-        // Assert
-        _mockEmployeeRepository.Verify(repo => repo.AddAsync(employee), Times.Once);
+        _context.Employees.Should().Contain(employee);
     }
 
     [Fact]
     public async Task UpdateEmployee_ShouldModifyEmployee()
     {
-        // Arrange
         var employee = _fixture.Create<Employee>();
-        _mockEmployeeRepository.Setup(repo => repo.UpdateAsync(employee)).Returns(Task.CompletedTask);
+        await _context.Employees.AddAsync(employee);
+        await _context.SaveChangesAsync();
 
-        // Act
-        await _mockEmployeeRepository.Object.UpdateAsync(employee);
+        employee.FirstName = "leenz";
 
-        // Assert
-        _mockEmployeeRepository.Verify(repo => repo.UpdateAsync(employee), Times.Once);
+        await _repository.UpdateAsync(employee);
+
+        var updatedEmployee = await _context.Employees.FindAsync(employee.Id);
+        updatedEmployee.Should().NotBeNull();
+        updatedEmployee.FirstName.Should().Be("leenz");
     }
 
     [Fact]
     public async Task DeleteEmployee_ShouldRemoveEmployee()
     {
-        // Arrange
         var employee = _fixture.Create<Employee>();
-        _mockEmployeeRepository.Setup(repo => repo.DeleteAsync(employee)).Returns(Task.CompletedTask);
+        await _context.Employees.AddAsync(employee);
+        await _context.SaveChangesAsync();
+        await _repository.DeleteAsync(employee);
 
-        // Act
-        await _mockEmployeeRepository.Object.DeleteAsync(employee);
-
-        // Assert
-        _mockEmployeeRepository.Verify(repo => repo.DeleteAsync(employee), Times.Once);
+        _context.Employees.Should().NotContain(employee);
     }
 
     [Fact]
     public async Task ListManagers_ShouldReturnListOfManagers()
     {
-        // Arrange
-        var managers = _fixture.CreateMany<Employee>(10)
-            .Select(e => { e.Position = EmployeePosition.Manager; return e; })
-            .ToList();
+        var managers = _fixture.Build<Employee>()
+            .With(e => e.Position, EmployeePosition.Manager)
+            .CreateMany(10);
 
-        _mockEmployeeRepository.Setup(repo => repo.ListManagers()).ReturnsAsync(managers);
+        await _context.Employees.AddRangeAsync(managers);
+        await _context.SaveChangesAsync();
 
-        // Act
-        var result = await _mockEmployeeRepository.Object.ListManagers();
+        var result = await _repository.ListManagers();
 
-        // Assert
         result.Should().BeEquivalentTo(managers);
     }
-
-
 }

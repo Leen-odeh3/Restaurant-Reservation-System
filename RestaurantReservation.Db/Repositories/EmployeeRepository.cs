@@ -15,6 +15,7 @@ public class EmployeeRepository : Repository<Employee>, IEmployeeRepository, IDi
 
     public EmployeeRepository(RestaurantReservationDbContext context) : base(context)
     {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
     public async Task<List<Employee>> ListManagers()

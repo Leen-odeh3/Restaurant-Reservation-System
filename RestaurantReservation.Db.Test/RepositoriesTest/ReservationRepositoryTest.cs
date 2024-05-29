@@ -11,7 +11,7 @@ public class ReservationRepositoryTest
 {
     private readonly Mock<RestaurantReservationDbContext> _mockDbContext;
     private readonly Mock<IReservationRepository> _mockReservationRepository;
-    private readonly Fixture _fixture;
+    private readonly IFixture _fixture;
 
     public ReservationRepositoryTest()
     {
