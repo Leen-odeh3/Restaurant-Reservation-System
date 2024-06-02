@@ -18,3 +18,4 @@ FROM Reservations r
 JOIN Customers c ON r.CustomerId = c.CustomerId
 JOIN Restaurants rest ON r.RestaurantId = rest.RestaurantId;
 
+

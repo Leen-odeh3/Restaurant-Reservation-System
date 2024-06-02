@@ -24,11 +24,11 @@ namespace RestaurantReservation.Db.Extensions
         {
             return new List<Customer>
                 {
-                    new Customer { CustomerId = 1, FirstName = "John", LastName = "Doe", Email = "John.doe@example.com", CustomerPhoneNumber = "123-456-7890" },
-                    new Customer { CustomerId = 2, FirstName = "Jane", LastName = "Doe", Email = "Jane.doe@example.com", CustomerPhoneNumber = "987-654-3210" },
-                    new Customer { CustomerId = 3, FirstName = "Alice", LastName = "Smith", Email = "Alice.smith@example.com", CustomerPhoneNumber = "555-123-4567" },
-                    new Customer { CustomerId = 4, FirstName = "Bob", LastName = "Smith", Email = "Bob.smith@example.com", CustomerPhoneNumber = "555-987-6543" },
-                    new Customer { CustomerId = 5, FirstName = "Charlie", LastName = "Brown", Email = "Charlie.brown@example.com", CustomerPhoneNumber = "555-555-5555" }
+                    new Customer { Id = 1, FirstName = "John", LastName = "Doe", Email = "John.doe@example.com", CustomerPhoneNumber = "123-456-7890" },
+                    new Customer { Id = 2, FirstName = "Jane", LastName = "Doe", Email = "Jane.doe@example.com", CustomerPhoneNumber = "987-654-3210" },
+                    new Customer { Id = 3, FirstName = "Alice", LastName = "Smith", Email = "Alice.smith@example.com", CustomerPhoneNumber = "555-123-4567" },
+                    new Customer { Id = 4, FirstName = "Bob", LastName = "Smith", Email = "Bob.smith@example.com", CustomerPhoneNumber = "555-987-6543" },
+                    new Customer { Id = 5, FirstName = "Charlie", LastName = "Brown", Email = "Charlie.brown@example.com", CustomerPhoneNumber = "555-555-5555" }
                 };
         }
 

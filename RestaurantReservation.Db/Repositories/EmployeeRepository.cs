@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace RestaurantReservation.Db.Repositories
 {
     public class EmployeeRepository : Repository<Employee>, IEmployeeRepository
@@ -19,6 +20,7 @@ namespace RestaurantReservation.Db.Repositories
             return await _context.Employees
                 .Where(e => e.Position == EmployeePosition.Manager)
                 .ToListAsync();
+
         }
 
     }
