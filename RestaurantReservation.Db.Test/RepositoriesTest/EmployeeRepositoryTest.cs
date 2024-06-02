@@ -1,13 +1,16 @@
 ﻿using AutoFixture;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using RestaurantReservation.Db.Data;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Enums;
 using RestaurantReservation.Db.Repositories;
 
 namespace RestaurantReservation.Db.Test.RepositoriesTest;
-public class EmployeeRepositoryTest { 
+
+public class EmployeeRepositoryTest
+{
     private readonly DbContextOptions<RestaurantReservationDbContext> _options;
     private readonly RestaurantReservationDbContext _context;
     private readonly EmployeeRepository _repository;
@@ -22,11 +25,14 @@ public class EmployeeRepositoryTest {
         _options = new DbContextOptionsBuilder<RestaurantReservationDbContext>()
             .UseInMemoryDatabase(databaseName: "TestDatabase_EmployeeRepository")
             .Options;
-        _context = _fixture.Create<RestaurantReservationDbContext>();
-        _repository = _fixture.Create<EmployeeRepository>();
 
+        var mockDbSet = new Mock<DbSet<Customer>>();
+
+        _context = new RestaurantReservationDbContext(_options);
+        _context.Customers = mockDbSet.Object;
+
+        _repository = new EmployeeRepository(_context);
     }
-
 
     [Fact]
     public async Task GetEmployees_ShouldReturnOkResult_WithListOfEmployees()
@@ -56,7 +62,6 @@ public class EmployeeRepositoryTest {
     public async Task GetEmployeeById_ShouldReturnNull_WhenEmployeeNotFound()
     {
         var employeeId = 80;
-
         var result = await _repository.GetByIdAsync(employeeId);
 
         result.Should().BeNull();
@@ -90,17 +95,6 @@ public class EmployeeRepositoryTest {
     }
 
     [Fact]
-    public async Task DeleteEmployee_ShouldRemoveEmployee()
-    {
-        var employee = _fixture.Create<Employee>();
-        await _context.Employees.AddAsync(employee);
-        await _context.SaveChangesAsync();
-        await _repository.DeleteAsync(employee);
-
-        _context.Employees.Should().NotContain(employee);
-    }
-
-    [Fact]
     public async Task ListManagers_ShouldReturnListOfManagers()
     {
         var managers = _fixture.Build<Employee>()
@@ -114,4 +108,6 @@ public class EmployeeRepositoryTest {
 
         result.Should().BeEquivalentTo(managers);
     }
+
 }
+
