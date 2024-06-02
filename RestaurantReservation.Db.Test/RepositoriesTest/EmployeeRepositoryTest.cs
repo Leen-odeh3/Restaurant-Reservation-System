@@ -7,30 +7,27 @@ using RestaurantReservation.Db.Enums;
 using RestaurantReservation.Db.Repositories;
 
 namespace RestaurantReservation.Db.Test.RepositoriesTest;
-public class EmployeeRepositoryTest : IDisposable
-{
+public class EmployeeRepositoryTest { 
     private readonly DbContextOptions<RestaurantReservationDbContext> _options;
     private readonly RestaurantReservationDbContext _context;
     private readonly EmployeeRepository _repository;
     private readonly IFixture _fixture;
 
+    private readonly string name = "leen";
     public EmployeeRepositoryTest()
     {
-        _options = new DbContextOptionsBuilder<RestaurantReservationDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        _context = new RestaurantReservationDbContext(_options);
-        _repository = new EmployeeRepository(_context);
         _fixture = new Fixture();
         _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
         _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+
+        _options = new DbContextOptionsBuilder<RestaurantReservationDbContext>()
+            .UseInMemoryDatabase(databaseName: "TestDatabase_EmployeeRepository")
+            .Options;
+        _context = _fixture.Create<RestaurantReservationDbContext>();
+        _repository = _fixture.Create<EmployeeRepository>();
+
     }
 
-    public void Dispose()
-    {
-        _context.Dispose();
-    }
 
     [Fact]
     public async Task GetEmployees_ShouldReturnOkResult_WithListOfEmployees()
@@ -83,13 +80,13 @@ public class EmployeeRepositoryTest : IDisposable
         await _context.Employees.AddAsync(employee);
         await _context.SaveChangesAsync();
 
-        employee.FirstName = "leenz";
+        employee.FirstName = name;
 
         await _repository.UpdateAsync(employee);
 
         var updatedEmployee = await _context.Employees.FindAsync(employee.Id);
         updatedEmployee.Should().NotBeNull();
-        updatedEmployee.FirstName.Should().Be("leenz");
+        updatedEmployee.FirstName.Should().Be(name);
     }
 
     [Fact]

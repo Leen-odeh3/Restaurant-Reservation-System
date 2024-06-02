@@ -17,7 +17,7 @@ public class ReservationRepositoryTest : IDisposable
     public ReservationRepositoryTest()
     {
         _options = new DbContextOptionsBuilder<RestaurantReservationDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(databaseName: "_TestDatabase")
             .Options;
 
         _context = new RestaurantReservationDbContext(_options);

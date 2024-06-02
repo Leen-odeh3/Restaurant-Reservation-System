@@ -8,7 +8,7 @@ using RestaurantReservation.Db.Repositories;
 
 namespace RestaurantReservation.Db.Test.RepositoriesTest;
 
-public class OrderRepositoryTest : IDisposable
+public class OrderRepositoryTest
 {
     private readonly DbContextOptions<RestaurantReservationDbContext> _options;
     private readonly RestaurantReservationDbContext _context;
@@ -19,33 +19,35 @@ public class OrderRepositoryTest : IDisposable
     public OrderRepositoryTest()
     {
         _options = new DbContextOptionsBuilder<RestaurantReservationDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(databaseName: "TestDatabase")
             .Options;
 
-        _context = new RestaurantReservationDbContext(_options);
-        _repository = new OrderRepository(_context);
         _fixture = new Fixture();
         _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
         _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
 
         _order = _fixture.Create<Order>();
+
+        _context = new RestaurantReservationDbContext(_options); 
+        _repository = _fixture.Create<OrderRepository>();
+
     }
 
     [Fact]
     public async Task UpdateOrder_ShouldHandleNegativeTotalAmount()
     {
-        // Arrange
         var order = _fixture.Create<Order>();
         await _context.Orders.AddAsync(order);
         await _context.SaveChangesAsync();
 
-        order.TotalAmount = -10; 
-        await _repository.UpdateAsync(order);
+        order.TotalAmount = -10;
 
-        // Assert
+        await Assert.ThrowsAsync<NegativeTotalAmountException>(() => _repository.UpdateAsync(order));
+
         var updatedOrder = await _context.Orders.FindAsync(order.Id);
-        updatedOrder.TotalAmount.Should().Be(order.TotalAmount);
+        updatedOrder.TotalAmount.Should().NotBe(order.TotalAmount);
     }
+
 
     [Fact]
     public async Task AddOrder_ShouldAddOrderToDatabase()
@@ -139,9 +141,6 @@ public class OrderRepositoryTest : IDisposable
             }
         }
     }
-    public void Dispose()
-    {
-        _context.Dispose();
-    }
+  
 }
 
