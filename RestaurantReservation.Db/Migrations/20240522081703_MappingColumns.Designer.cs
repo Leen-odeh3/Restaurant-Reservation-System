@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RestaurantReservation.Db.Data;
 
 namespace RestaurantReservation.Db.Migrations
 {
     [DbContext(typeof(RestaurantReservationDbContext))]
-    partial class RestaurantReservationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240522081703_MappingColumns")]
+    partial class MappingColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,14 +104,8 @@ namespace RestaurantReservation.Db.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-
                     b.Property<int>("Position")
                         .HasColumnType("int");
-
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
 
                     b.Property<int?>("RestaurantId")
                         .HasColumnType("int");
@@ -269,15 +265,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 1,
                             EmployeeId = 5,
-
                             OrderDate = new DateTime(2024, 5, 21, 11, 17, 3, 170, DateTimeKind.Local).AddTicks(3125),
-
-
-                            OrderDate = new DateTime(2024, 5, 18, 10, 58, 15, 341, DateTimeKind.Local).AddTicks(7314),
-
-                            OrderDate = new DateTime(2024, 5, 18, 14, 11, 54, 943, DateTimeKind.Local).AddTicks(9052),
-
-
                             ReservationId = 1,
                             TotalAmount = 45m
                         },
@@ -285,15 +273,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 2,
                             EmployeeId = 3,
-
                             OrderDate = new DateTime(2024, 5, 20, 11, 17, 3, 171, DateTimeKind.Local).AddTicks(5606),
-
-
-                            OrderDate = new DateTime(2024, 5, 17, 10, 58, 15, 342, DateTimeKind.Local).AddTicks(8669),
-
-                            OrderDate = new DateTime(2024, 5, 17, 14, 11, 54, 945, DateTimeKind.Local).AddTicks(9419),
-
-
                             ReservationId = 2,
                             TotalAmount = 30m
                         },
@@ -301,15 +281,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 3,
                             EmployeeId = 3,
-
                             OrderDate = new DateTime(2024, 5, 19, 11, 17, 3, 171, DateTimeKind.Local).AddTicks(5621),
-
-
-                            OrderDate = new DateTime(2024, 5, 16, 10, 58, 15, 342, DateTimeKind.Local).AddTicks(8690),
-
-                          OrderDate = new DateTime(2024, 5, 16, 14, 11, 54, 945, DateTimeKind.Local).AddTicks(9525),
-
-
                             ReservationId = 3,
                             TotalAmount = 60m
                         },
@@ -317,15 +289,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 4,
                             EmployeeId = 5,
-
                             OrderDate = new DateTime(2024, 5, 18, 11, 17, 3, 171, DateTimeKind.Local).AddTicks(5623),
-
-
-                            OrderDate = new DateTime(2024, 5, 15, 10, 58, 15, 342, DateTimeKind.Local).AddTicks(8694),
-
-                            OrderDate = new DateTime(2024, 5, 15, 14, 11, 54, 945, DateTimeKind.Local).AddTicks(9536),
-
-
                             ReservationId = 4,
                             TotalAmount = 22m
                         },
@@ -333,14 +297,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 5,
                             EmployeeId = 3,
-
                             OrderDate = new DateTime(2024, 5, 17, 11, 17, 3, 171, DateTimeKind.Local).AddTicks(5625),
-
-
-                            OrderDate = new DateTime(2024, 5, 14, 10, 58, 15, 342, DateTimeKind.Local).AddTicks(8696),
-
-                            OrderDate = new DateTime(2024, 5, 14, 14, 11, 54, 945, DateTimeKind.Local).AddTicks(9580),
-
                             ReservationId = 5,
                             TotalAmount = 80m
                         });
@@ -451,7 +408,7 @@ namespace RestaurantReservation.Db.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<int>("PartySize")
@@ -460,10 +417,10 @@ namespace RestaurantReservation.Db.Migrations
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("RestaurantId")
+                    b.Property<int?>("RestaurantId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TableId")
+                    b.Property<int?>("TableId")
                         .HasColumnType("int");
 
                     b.HasKey("ReservationId");
@@ -608,12 +565,8 @@ namespace RestaurantReservation.Db.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
-
                     b.Property<int?>("RestaurantId")
                         .IsRequired()
-
-                    b.Property<int>("RestaurantId")
-
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -826,28 +779,16 @@ namespace RestaurantReservation.Db.Migrations
                     b.HasOne("RestaurantReservation.Db.Entities.Customer", "Customer")
                         .WithMany("Reservations")
                         .HasForeignKey("CustomerId")
-
                         .OnDelete(DeleteBehavior.SetNull);
-
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
-
 
                     b.HasOne("RestaurantReservation.Db.Entities.Restaurant", "Restaurant")
                         .WithMany("Reservations")
-                        .HasForeignKey("RestaurantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RestaurantId");
 
                     b.HasOne("RestaurantReservation.Db.Entities.Table", "Table")
                         .WithMany("Reservations")
                         .HasForeignKey("TableId")
-
                         .OnDelete(DeleteBehavior.NoAction);
-
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
 
                     b.Navigation("Customer");
 

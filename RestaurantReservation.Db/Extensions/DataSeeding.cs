@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RestaurantReservation.Db.Entities;
+using RestaurantReservation.Db.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -35,11 +36,11 @@ namespace RestaurantReservation.Db.Extensions
         {
             return new List<Employee>
                 {
-                    new Employee { Id = 1, FirstName = "Ella", LastName = "Fitzgerald", Position = "Manager", RestaurantId = 1 },
-                    new Employee { Id = 2, FirstName = "Louis", LastName = "Armstrong", Position = "Chef", RestaurantId = 1 },
-                    new Employee { Id = 3, FirstName = "Billie", LastName = "Holiday", Position = "Waiter", RestaurantId = 1 },
-                    new Employee { Id = 4, FirstName = "Charlie", LastName = "Parker", Position = "Cashier", RestaurantId = 2 },
-                    new Employee { Id = 5, FirstName = "Dizzy", LastName = "Gillespie", Position = "Waiter", RestaurantId = 2 }
+                    new Employee { Id = 1, FirstName = "Ella", LastName = "Fitzgerald", Position = EmployeePosition.Manager, RestaurantId = 1 },
+                    new Employee { Id = 2, FirstName = "Louis", LastName = "Armstrong", Position = EmployeePosition.Chef, RestaurantId = 1 },
+                    new Employee { Id = 3, FirstName = "Billie", LastName = "Holiday", Position  = EmployeePosition.Waiter, RestaurantId = 1 },
+                    new Employee { Id = 4, FirstName = "Charlie", LastName = "Parker", Position  = EmployeePosition.Waiter, RestaurantId = 2 },
+                    new Employee { Id = 5, FirstName = "Dizzy", LastName = "Gillespie", Position = EmployeePosition.Cashier, RestaurantId = 2 }
                 };
         }
 

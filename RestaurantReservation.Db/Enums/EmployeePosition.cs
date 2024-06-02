@@ -1,3 +1,12 @@
+
+﻿namespace RestaurantReservation.Db.Enums;
+public enum EmployeePosition
+{ 
+    Waiter = 1,
+    Chef = 2,
+    Cashier = 3, 
+    Manager = 4 
+
 ﻿
 namespace RestaurantReservation.Db.Enums
 {
