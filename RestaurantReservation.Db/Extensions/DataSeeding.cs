@@ -23,11 +23,11 @@ namespace RestaurantReservation.Db.Extensions
         {
             return new List<Customer>
                 {
-                    new Customer { Id = 1, FirstName = "John", LastName = "Doe", Email = "John.doe@example.com", PhoneNumber = "123-456-7890" },
-                    new Customer { Id = 2, FirstName = "Jane", LastName = "Doe", Email = "Jane.doe@example.com", PhoneNumber = "987-654-3210" },
-                    new Customer { Id = 3, FirstName = "Alice", LastName = "Smith", Email = "Alice.smith@example.com", PhoneNumber = "555-123-4567" },
-                    new Customer { Id = 4, FirstName = "Bob", LastName = "Smith", Email = "Bob.smith@example.com", PhoneNumber = "555-987-6543" },
-                    new Customer { Id = 5, FirstName = "Charlie", LastName = "Brown", Email = "Charlie.brown@example.com", PhoneNumber = "555-555-5555" }
+                    new Customer { Id = 1, FirstName = "John", LastName = "Doe", Email = "John.doe@example.com", CustomerPhoneNumber = "123-456-7890" },
+                    new Customer { Id = 2, FirstName = "Jane", LastName = "Doe", Email = "Jane.doe@example.com", CustomerPhoneNumber = "987-654-3210" },
+                    new Customer { Id = 3, FirstName = "Alice", LastName = "Smith", Email = "Alice.smith@example.com", CustomerPhoneNumber = "555-123-4567" },
+                    new Customer { Id = 4, FirstName = "Bob", LastName = "Smith", Email = "Bob.smith@example.com", CustomerPhoneNumber = "555-987-6543" },
+                    new Customer { Id = 5, FirstName = "Charlie", LastName = "Brown", Email = "Charlie.brown@example.com", CustomerPhoneNumber = "555-555-5555" }
                 };
         }
 
@@ -86,11 +86,11 @@ namespace RestaurantReservation.Db.Extensions
         {
             return new List<Restaurant>
                 {
-                    new Restaurant { Id = 1, Name = "Gourmet Hub", Address = "1234 Culinary Blvd, Foodie Town", PhoneNumber = "555-1234", OpeningHours = "9:00 AM - 11:00 PM" },
-                    new Restaurant { Id = 2, Name = "The Italian Corner", Address = "5678 Pasta Lane, Little Italy", PhoneNumber = "555-5678", OpeningHours = "11:00 AM - 10:00 PM" },
-                    new Restaurant { Id = 3, Name = "Sushi Sushi", Address = "135 Sushi St, Downtown", PhoneNumber = "555-1357", OpeningHours = "12:00 PM - 10:00 PM" },
-                    new Restaurant { Id = 4, Name = "Curry Leaf", Address = "2468 Curry Ave, Spice City", PhoneNumber = "555-2468", OpeningHours = "10:00 AM - 9:00 PM" },
-                    new Restaurant { Id = 5, Name = "The Burger Joint", Address = "7890 Burger Blvd, Greasy Corner", PhoneNumber = "555-7890", OpeningHours = "10:00 AM - 12:00 AM" }
+                    new Restaurant { RestaurantId = 1, Name = "Gourmet Hub", Address = "1234 Culinary Blvd, Foodie Town", PhoneNumber = "555-1234", OpeningHours = "9:00 AM - 11:00 PM" },
+                    new Restaurant { RestaurantId = 2, Name = "The Italian Corner", Address = "5678 Pasta Lane, Little Italy", PhoneNumber = "555-5678", OpeningHours = "11:00 AM - 10:00 PM" },
+                    new Restaurant { RestaurantId = 3, Name = "Sushi Sushi", Address = "135 Sushi St, Downtown", PhoneNumber = "555-1357", OpeningHours = "12:00 PM - 10:00 PM" },
+                    new Restaurant { RestaurantId = 4, Name = "Curry Leaf", Address = "2468 Curry Ave, Spice City", PhoneNumber = "555-2468", OpeningHours = "10:00 AM - 9:00 PM" },
+                    new Restaurant { RestaurantId = 5, Name = "The Burger Joint", Address = "7890 Burger Blvd, Greasy Corner", PhoneNumber = "555-7890", OpeningHours = "10:00 AM - 12:00 AM" }
                 };
         }
 
