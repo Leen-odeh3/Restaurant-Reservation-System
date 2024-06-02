@@ -34,6 +34,7 @@ namespace RestaurantReservation.Db.Data
            .HasName("CalculateTotalRevenue");
 
 
+
             new EmployeeConfiguration().Configure(modelBuilder.Entity<Employee>());
             new OrderConfiguration().Configure(modelBuilder.Entity<Order>());
             new OrderItemConfiguration().Configure(modelBuilder.Entity<OrderItem>());
@@ -41,6 +42,7 @@ namespace RestaurantReservation.Db.Data
             new ReservationConfiguration().Configure(modelBuilder.Entity<Reservation>());
             new RestaurantConfiguration().Configure(modelBuilder.Entity<Restaurant>());
             new MenuItemConfiguration().Configure(modelBuilder.Entity<MenuItem>());
+
         }
 
         public decimal CalculateRestaurantTotalRevenue(int restaurantId)
@@ -66,6 +68,7 @@ namespace RestaurantReservation.Db.Data
 
 
             return totalRevenue;
+
         }
 
         public DbSet<Customer> Customers { get; set; }

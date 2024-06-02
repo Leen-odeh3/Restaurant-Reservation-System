@@ -11,20 +11,12 @@ namespace RestaurantReservation.Db.Repositories
 {
     public class ReservationRepository : Repository<Reservation>, IReservationRepository
     {
-        private readonly ICustomerRepository _customerRepository;
-
-        public ReservationRepository(RestaurantReservationDbContext context, ICustomerRepository customerRepository) : base(context)
+        public ReservationRepository(RestaurantReservationDbContext context) : base(context)
         {
-            _customerRepository = customerRepository;
         }
 
         public async Task<List<Reservation>> GetReservationsByCustomer(int customerId)
         {
-            var customer = await _customerRepository.GetByIdAsync(customerId);
-            if (customer is null)
-            {
-               throw new NotFoundException<Customer>($"Customer with id {customerId} not found.");
-            }
 
             return await _context.Reservations
                 .Where(r => r.CustomerId == customerId)

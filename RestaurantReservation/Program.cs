@@ -1,15 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using RestaurantReservation.Db;
 using RestaurantReservation.Db.Data;
 using System;
 using System.Linq;
 
-namespace RestaurantReservation
-{
-    internal class Program
+
+namespace RestaurantReservation;
+    public class Program
     {
         static void Main(string[] args)
         {
+
             using (var dbContext = new RestaurantReservationDbContext())
             {
                 var reservationsFromView = dbContext.ReservationsDetailsView.ToList();
@@ -45,9 +46,9 @@ namespace RestaurantReservation
                 Console.WriteLine($"Total revenue for restaurant with ID {restaurantId}: {totalRevenue:C}");
             }
          */
+
             var serviceProvider = new ServiceCollection()
                .AddInfrastructureDependencies()
                .BuildServiceProvider();
         }
     }
-}

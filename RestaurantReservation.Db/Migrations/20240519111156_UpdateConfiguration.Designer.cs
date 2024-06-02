@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RestaurantReservation.Db.Data;
 
 namespace RestaurantReservation.Db.Migrations
 {
     [DbContext(typeof(RestaurantReservationDbContext))]
-    partial class RestaurantReservationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240519111156_UpdateConfiguration")]
+    partial class UpdateConfiguration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,13 +23,10 @@ namespace RestaurantReservation.Db.Migrations
 
             modelBuilder.Entity("RestaurantReservation.Db.Entities.Customer", b =>
                 {
-                    b.Property<int>("CustomerId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("CustomerPhoneNumber")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -38,50 +37,53 @@ namespace RestaurantReservation.Db.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CustomerId");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Customers");
 
                     b.HasData(
                         new
                         {
-                            CustomerId = 1,
-                            CustomerPhoneNumber = "123-456-7890",
+                            Id = 1,
                             Email = "John.doe@example.com",
                             FirstName = "John",
-                            LastName = "Doe"
+                            LastName = "Doe",
+                            PhoneNumber = "123-456-7890"
                         },
                         new
                         {
-                            CustomerId = 2,
-                            CustomerPhoneNumber = "987-654-3210",
+                            Id = 2,
                             Email = "Jane.doe@example.com",
                             FirstName = "Jane",
-                            LastName = "Doe"
+                            LastName = "Doe",
+                            PhoneNumber = "987-654-3210"
                         },
                         new
                         {
-                            CustomerId = 3,
-                            CustomerPhoneNumber = "555-123-4567",
+                            Id = 3,
                             Email = "Alice.smith@example.com",
                             FirstName = "Alice",
-                            LastName = "Smith"
+                            LastName = "Smith",
+                            PhoneNumber = "555-123-4567"
                         },
                         new
                         {
-                            CustomerId = 4,
-                            CustomerPhoneNumber = "555-987-6543",
+                            Id = 4,
                             Email = "Bob.smith@example.com",
                             FirstName = "Bob",
-                            LastName = "Smith"
+                            LastName = "Smith",
+                            PhoneNumber = "555-987-6543"
                         },
                         new
                         {
-                            CustomerId = 5,
-                            CustomerPhoneNumber = "555-555-5555",
+                            Id = 5,
                             Email = "Charlie.brown@example.com",
                             FirstName = "Charlie",
-                            LastName = "Brown"
+                            LastName = "Brown",
+                            PhoneNumber = "555-555-5555"
                         });
                 });
 
@@ -264,11 +266,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 1,
                             EmployeeId = 5,
-
-                            OrderDate = new DateTime(2024, 5, 18, 10, 58, 15, 341, DateTimeKind.Local).AddTicks(7314),
-
                             OrderDate = new DateTime(2024, 5, 18, 14, 11, 54, 943, DateTimeKind.Local).AddTicks(9052),
-
                             ReservationId = 1,
                             TotalAmount = 45m
                         },
@@ -276,11 +274,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 2,
                             EmployeeId = 3,
-
-                            OrderDate = new DateTime(2024, 5, 17, 10, 58, 15, 342, DateTimeKind.Local).AddTicks(8669),
-
                             OrderDate = new DateTime(2024, 5, 17, 14, 11, 54, 945, DateTimeKind.Local).AddTicks(9419),
-
                             ReservationId = 2,
                             TotalAmount = 30m
                         },
@@ -288,11 +282,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 3,
                             EmployeeId = 3,
-
-                            OrderDate = new DateTime(2024, 5, 16, 10, 58, 15, 342, DateTimeKind.Local).AddTicks(8690),
-
-                          OrderDate = new DateTime(2024, 5, 16, 14, 11, 54, 945, DateTimeKind.Local).AddTicks(9525),
-
+                            OrderDate = new DateTime(2024, 5, 16, 14, 11, 54, 945, DateTimeKind.Local).AddTicks(9525),
                             ReservationId = 3,
                             TotalAmount = 60m
                         },
@@ -300,11 +290,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 4,
                             EmployeeId = 5,
-
-                            OrderDate = new DateTime(2024, 5, 15, 10, 58, 15, 342, DateTimeKind.Local).AddTicks(8694),
-
                             OrderDate = new DateTime(2024, 5, 15, 14, 11, 54, 945, DateTimeKind.Local).AddTicks(9536),
-
                             ReservationId = 4,
                             TotalAmount = 22m
                         },
@@ -312,11 +298,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             Id = 5,
                             EmployeeId = 3,
-
-                            OrderDate = new DateTime(2024, 5, 14, 10, 58, 15, 342, DateTimeKind.Local).AddTicks(8696),
-
                             OrderDate = new DateTime(2024, 5, 14, 14, 11, 54, 945, DateTimeKind.Local).AddTicks(9580),
-
                             ReservationId = 5,
                             TotalAmount = 80m
                         });
@@ -422,7 +404,7 @@ namespace RestaurantReservation.Db.Migrations
 
             modelBuilder.Entity("RestaurantReservation.Db.Entities.Reservation", b =>
                 {
-                    b.Property<int>("ReservationId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -442,7 +424,7 @@ namespace RestaurantReservation.Db.Migrations
                     b.Property<int>("TableId")
                         .HasColumnType("int");
 
-                    b.HasKey("ReservationId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
@@ -455,7 +437,7 @@ namespace RestaurantReservation.Db.Migrations
                     b.HasData(
                         new
                         {
-                            ReservationId = 1,
+                            Id = 1,
                             CustomerId = 1,
                             PartySize = 4,
                             ReservationDate = new DateTime(2024, 5, 22, 0, 0, 0, 0, DateTimeKind.Local),
@@ -464,7 +446,7 @@ namespace RestaurantReservation.Db.Migrations
                         },
                         new
                         {
-                            ReservationId = 2,
+                            Id = 2,
                             CustomerId = 2,
                             PartySize = 2,
                             ReservationDate = new DateTime(2024, 5, 23, 0, 0, 0, 0, DateTimeKind.Local),
@@ -473,7 +455,7 @@ namespace RestaurantReservation.Db.Migrations
                         },
                         new
                         {
-                            ReservationId = 3,
+                            Id = 3,
                             CustomerId = 3,
                             PartySize = 6,
                             ReservationDate = new DateTime(2024, 5, 24, 0, 0, 0, 0, DateTimeKind.Local),
@@ -482,7 +464,7 @@ namespace RestaurantReservation.Db.Migrations
                         },
                         new
                         {
-                            ReservationId = 4,
+                            Id = 4,
                             CustomerId = 4,
                             PartySize = 3,
                             ReservationDate = new DateTime(2024, 5, 25, 0, 0, 0, 0, DateTimeKind.Local),
@@ -491,7 +473,7 @@ namespace RestaurantReservation.Db.Migrations
                         },
                         new
                         {
-                            ReservationId = 5,
+                            Id = 5,
                             CustomerId = 5,
                             PartySize = 5,
                             ReservationDate = new DateTime(2024, 5, 26, 0, 0, 0, 0, DateTimeKind.Local),
@@ -502,7 +484,7 @@ namespace RestaurantReservation.Db.Migrations
 
             modelBuilder.Entity("RestaurantReservation.Db.Entities.Restaurant", b =>
                 {
-                    b.Property<int>("RestaurantId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -527,14 +509,14 @@ namespace RestaurantReservation.Db.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.HasKey("RestaurantId");
+                    b.HasKey("Id");
 
                     b.ToTable("Restaurants");
 
                     b.HasData(
                         new
                         {
-                            RestaurantId = 1,
+                            Id = 1,
                             Address = "1234 Culinary Blvd, Foodie Town",
                             Name = "Gourmet Hub",
                             OpeningHours = "9:00 AM - 11:00 PM",
@@ -542,7 +524,7 @@ namespace RestaurantReservation.Db.Migrations
                         },
                         new
                         {
-                            RestaurantId = 2,
+                            Id = 2,
                             Address = "5678 Pasta Lane, Little Italy",
                             Name = "The Italian Corner",
                             OpeningHours = "11:00 AM - 10:00 PM",
@@ -550,7 +532,7 @@ namespace RestaurantReservation.Db.Migrations
                         },
                         new
                         {
-                            RestaurantId = 3,
+                            Id = 3,
                             Address = "135 Sushi St, Downtown",
                             Name = "Sushi Sushi",
                             OpeningHours = "12:00 PM - 10:00 PM",
@@ -558,7 +540,7 @@ namespace RestaurantReservation.Db.Migrations
                         },
                         new
                         {
-                            RestaurantId = 4,
+                            Id = 4,
                             Address = "2468 Curry Ave, Spice City",
                             Name = "Curry Leaf",
                             OpeningHours = "10:00 AM - 9:00 PM",
@@ -566,7 +548,7 @@ namespace RestaurantReservation.Db.Migrations
                         },
                         new
                         {
-                            RestaurantId = 5,
+                            Id = 5,
                             Address = "7890 Burger Blvd, Greasy Corner",
                             Name = "The Burger Joint",
                             OpeningHours = "10:00 AM - 12:00 AM",
@@ -654,85 +636,6 @@ namespace RestaurantReservation.Db.Migrations
                             Capacity = 6,
                             RestaurantId = 5
                         });
-                });
-
-            modelBuilder.Entity("RestaurantReservation.Db.ViewModels.EmployeeDetails", b =>
-                {
-                    b.Property<string>("EmployeeFirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("EmployeeLastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Position")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RestaurantAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RestaurantId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RestaurantName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RestaurantOpeningHours")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RestaurantPhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToView("EmployeeDetailsView");
-                });
-
-            modelBuilder.Entity("RestaurantReservation.Db.ViewModels.ReservationDetails", b =>
-                {
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CustomerPhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OpeningHours")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PartySize")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ReservationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ReservationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RestaurantId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TableId")
-                        .HasColumnType("int");
-
-                    b.ToView("ReservationsDetailsView");
                 });
 
             modelBuilder.Entity("RestaurantReservation.Db.Entities.Employee", b =>

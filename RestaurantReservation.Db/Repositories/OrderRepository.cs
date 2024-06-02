@@ -17,10 +17,11 @@ namespace RestaurantReservation.Db.Repositories
         public async Task<List<Order>> ListOrdersAndMenuItems(int reservationId)
         {
             var reservation = await _context.Reservations
-                .Include(r => r.Orders)
-                    .ThenInclude(o => o.OrderItems)
-                        .ThenInclude(oi => oi.MenuItem)
-                .FirstOrDefaultAsync(r => r.Id == reservationId);
+            .Include(r => r.Orders)
+            .ThenInclude(o => o.OrderItems)
+            .ThenInclude(oi => oi.MenuItem)
+            .AsSplitQuery() 
+            .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
 
             if (reservation is null)
             {
@@ -35,10 +36,11 @@ namespace RestaurantReservation.Db.Repositories
         public async Task<List<MenuItem>> ListOrderedMenuItems(int reservationId)
         {
             var reservation = await _context.Reservations
-                .Include(r => r.Orders)
-                    .ThenInclude(o => o.OrderItems)
-                        .ThenInclude(oi => oi.MenuItem)
-                .FirstOrDefaultAsync(r => r.Id == reservationId);
+                 .Include(r => r.Orders)
+                 .ThenInclude(o => o.OrderItems)
+                 .ThenInclude(oi => oi.MenuItem)
+                 .AsSplitQuery()
+                 .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
 
             if (reservation is null)
             {
@@ -57,16 +59,14 @@ namespace RestaurantReservation.Db.Repositories
 
         public async Task<decimal> CalculateAverageOrderAmount(int employeeId)
         {
-            var orders = await _context.Orders
+            var averageOrderAmount = await _context.Orders
                 .Where(o => o.EmployeeId == employeeId)
-                .ToListAsync();
-
-            decimal totalOrderAmount = orders.Sum(o => o.TotalAmount);
-
-            decimal averageOrderAmount = orders.Count > 0 ? totalOrderAmount / orders.Count : 0;
+                .Select(o => o.TotalAmount)
+                .AverageAsync();
 
             return averageOrderAmount;
         }
+
 
     }
 }

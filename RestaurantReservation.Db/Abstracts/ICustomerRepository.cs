@@ -1,10 +1,7 @@
-﻿
+﻿using RestaurantReservation.Db.Entities;
 
-using RestaurantReservation.Db.Entities;
+namespace RestaurantReservation.Db.Abstracts;
 
-namespace RestaurantReservation.Db.Abstracts
+public interface ICustomerRepository : IRepository<Customer>
 {
-    public interface ICustomerRepository : IRepository<Customer>
-    {
-    }
 }
