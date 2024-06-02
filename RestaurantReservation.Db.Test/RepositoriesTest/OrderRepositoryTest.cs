@@ -1,97 +1,147 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using Moq;
-using RestaurantReservation.Db.Abstracts;
+using Microsoft.EntityFrameworkCore;
 using RestaurantReservation.Db.Data;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Exceptions;
+using RestaurantReservation.Db.Repositories;
 
 namespace RestaurantReservation.Db.Test.RepositoriesTest;
 
-public class OrderRepositoryTest
+public class OrderRepositoryTest : IDisposable
 {
-    private readonly Mock<RestaurantReservationDbContext> _mockDbContext;
-    private readonly Mock<IOrderRepository> _mockOrderRepository;
+    private readonly DbContextOptions<RestaurantReservationDbContext> _options;
+    private readonly RestaurantReservationDbContext _context;
+    private readonly OrderRepository _repository;
     private readonly IFixture _fixture;
+    private Order _order; 
 
     public OrderRepositoryTest()
     {
-        _mockOrderRepository = new Mock<IOrderRepository>();
+        _options = new DbContextOptionsBuilder<RestaurantReservationDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        _context = new RestaurantReservationDbContext(_options);
+        _repository = new OrderRepository(_context);
         _fixture = new Fixture();
         _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
         _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+
+        _order = _fixture.Create<Order>();
     }
 
     [Fact]
-    public async Task ListOrdersAndMenuItems_ShouldReturnListOfOrdersWithMenuItems()
+    public async Task UpdateOrder_ShouldHandleNegativeTotalAmount()
     {
         // Arrange
-        var reservationId = 1;
-        var orders = _fixture.CreateMany<Order>(5).ToList();
-        var orderItems = _fixture.CreateMany<OrderItem>(10).ToList();
-        orders.ForEach(order => order.OrderItems = orderItems);
-        _mockOrderRepository.Setup(repo => repo.ListOrdersAndMenuItems(reservationId)).ReturnsAsync(orders);
+        var order = _fixture.Create<Order>();
+        await _context.Orders.AddAsync(order);
+        await _context.SaveChangesAsync();
 
-        // Act
-        var result = await _mockOrderRepository.Object.ListOrdersAndMenuItems(reservationId);
+        order.TotalAmount = -10; 
+        await _repository.UpdateAsync(order);
 
         // Assert
-        result.Should().BeEquivalentTo(orders);
+        var updatedOrder = await _context.Orders.FindAsync(order.Id);
+        updatedOrder.TotalAmount.Should().Be(order.TotalAmount);
     }
 
     [Fact]
-    public async Task ListOrderedMenuItems_ShouldReturnListOfMenuItems()
+    public async Task AddOrder_ShouldAddOrderToDatabase()
+    {
+        await _repository.AddAsync(_order);
+
+        var addedOrder = await _context.Orders.FindAsync(_order.Id);
+        addedOrder.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task UpdateOrder_ShouldUpdateOrderInDatabase()
     {
         // Arrange
-        var reservationId = 1;
-        var menuItems = _fixture.CreateMany<MenuItem>(10).ToList();
-        _mockOrderRepository.Setup(repo => repo.ListOrderedMenuItems(reservationId)).ReturnsAsync(menuItems);
+        await _context.Orders.AddAsync(_order);
+        await _context.SaveChangesAsync();
+
+        _order.TotalAmount += 10;
+        await _repository.UpdateAsync(_order);
+
+        var updatedOrder = await _context.Orders.FindAsync(_order.Id);
+        updatedOrder.TotalAmount.Should().Be(_order.TotalAmount);
+    }
+
+    [Fact]
+    public async Task DeleteOrder_ShouldRemoveOrderFromDatabase()
+    {
+        await _context.Orders.AddAsync(_order);
+        await _context.SaveChangesAsync();
+
+        await _repository.DeleteAsync(_order);
+
+        var deletedOrder = await _context.Orders.FindAsync(_order.Id);
+        deletedOrder.Should().BeNull();
+    }
+
+
+    [Fact]
+    public async Task ListOrdersAndMenuItems_ShouldThrowExceptionForInvalidReservationId()
+    {
+        // Arrange
+        var invalidReservationId = -1; 
+
+        await Assert.ThrowsAsync<NotFoundException<Reservation>>(async () =>
+        {
+            await _repository.ListOrdersAndMenuItems(invalidReservationId);
+        });
+    }
+
+    [Fact]
+    public async Task CalculateAverageOrderAmount_ShouldReturnZeroForInvalidEmployeeId()
+    {
+        var invalidEmployeeId = -1; 
+
+        var result = await _repository.CalculateAverageOrderAmount(invalidEmployeeId);
+
+        result.Should().Be(0); 
+    }
+
+
+    [Fact]
+    public async Task ListOrdersAndMenuItems_ShouldReturnOrdersWithMenuItemsForValidReservationId()
+    {
+        // Arrange
+        var reservation = _fixture.Create<Reservation>();
+        reservation.Orders = _fixture.CreateMany<Order>(3).ToList();
+        foreach (var order in reservation.Orders)
+        {
+            order.OrderItems = _fixture.CreateMany<OrderItem>(2).ToList();
+            foreach (var orderItem in order.OrderItems)
+            {
+                orderItem.MenuItem = _fixture.Create<MenuItem>();
+            }
+        }
+        await _context.Reservations.AddAsync(reservation);
+        await _context.SaveChangesAsync();
 
         // Act
-        var result = await _mockOrderRepository.Object.ListOrderedMenuItems(reservationId);
+        var result = await _repository.ListOrdersAndMenuItems(reservation.ReservationId);
 
         // Assert
-        result.Should().BeEquivalentTo(menuItems);
+        result.Should().NotBeNull();
+        result.Count.Should().Be(reservation.Orders.Count);
+
+        foreach (var order in result)
+        {
+            order.OrderItems.Should().NotBeEmpty();
+            foreach (var orderItem in order.OrderItems)
+            {
+                orderItem.MenuItem.Should().NotBeNull();
+            }
+        }
     }
-
-    [Fact]
-    public async Task CalculateAverageOrderAmount_ShouldReturnAverageOrderAmount()
+    public void Dispose()
     {
-        // Arrange
-        var employeeId = 1;
-        var orders = _fixture.CreateMany<Order>(5).ToList();
-        orders.ForEach(order => order.TotalAmount = _fixture.Create<decimal>());
-        _mockOrderRepository.Setup(repo => repo.CalculateAverageOrderAmount(employeeId)).ReturnsAsync(orders.Select(o => o.TotalAmount).Average());
-
-        // Act
-        var result = await _mockOrderRepository.Object.CalculateAverageOrderAmount(employeeId);
-
-        // Assert
-        result.Should().Be(orders.Select(o => o.TotalAmount).Average());
-    }
-
-    [Fact]
-    public async Task ListOrdersAndMenuItems_ShouldThrowNotFoundException_WhenReservationNotFound()
-    {
-        // Arrange
-        var reservationId = 1;
-        _mockOrderRepository.Setup(repo => repo.ListOrdersAndMenuItems(reservationId)).ThrowsAsync(new NotFoundException<Reservation>("Reservation not found."));
-
-        // Act & Assert
-        await Assert.ThrowsAsync<NotFoundException<Reservation>>(async () => await _mockOrderRepository.Object.ListOrdersAndMenuItems(reservationId));
-    }
-
-    [Fact]
-    public async Task CalculateAverageOrderAmount_ShouldReturnZero_WhenNoOrdersFound()
-    {
-        // Arrange
-        var employeeId = 1;
-        _mockOrderRepository.Setup(repo => repo.CalculateAverageOrderAmount(employeeId)).ReturnsAsync(0);
-
-        // Act
-        var result = await _mockOrderRepository.Object.CalculateAverageOrderAmount(employeeId);
-
-        // Assert
-        result.Should().Be(0);
+        _context.Dispose();
     }
 }
+
