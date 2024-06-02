@@ -13,7 +13,6 @@ public class EmployeeRepositoryTest {
     private readonly EmployeeRepository _repository;
     private readonly IFixture _fixture;
 
-    private readonly string name = "leen";
     public EmployeeRepositoryTest()
     {
         _fixture = new Fixture();
@@ -76,6 +75,7 @@ public class EmployeeRepositoryTest {
     [Fact]
     public async Task UpdateEmployee_ShouldModifyEmployee()
     {
+        var name = "leen";
         var employee = _fixture.Create<Employee>();
         await _context.Employees.AddAsync(employee);
         await _context.SaveChangesAsync();

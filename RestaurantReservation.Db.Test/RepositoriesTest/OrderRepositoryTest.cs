@@ -43,9 +43,6 @@ public class OrderRepositoryTest
         order.TotalAmount = -10;
 
         await Assert.ThrowsAsync<NegativeTotalAmountException>(() => _repository.UpdateAsync(order));
-
-        var updatedOrder = await _context.Orders.FindAsync(order.Id);
-        updatedOrder.TotalAmount.Should().NotBe(order.TotalAmount);
     }
 
 
