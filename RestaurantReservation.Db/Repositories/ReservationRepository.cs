@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace RestaurantReservation.Db.Repositories;
 
 public class ReservationRepository : Repository<Reservation>, IReservationRepository
@@ -14,6 +15,16 @@ public class ReservationRepository : Repository<Reservation>, IReservationReposi
     public ReservationRepository(RestaurantReservationDbContext context) : base(context)
     {     
     }
+namespace RestaurantReservation.Db.Repositories
+{
+    public class ReservationRepository : Repository<Reservation>, IReservationRepository
+    {
+        public ReservationRepository(RestaurantReservationDbContext context) : base(context)
+        {
+        }
+
+        public async Task<List<Reservation>> GetReservationsByCustomer(int customerId)
+        {
 
     public async Task<List<Reservation>> GetReservationsByCustomer(int customerId)
     {

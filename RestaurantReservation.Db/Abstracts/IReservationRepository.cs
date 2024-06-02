@@ -6,4 +6,10 @@ namespace RestaurantReservation.Db.Abstracts;
 public interface IReservationRepository : IRepository<Reservation>
 {
     Task<List<Reservation>> GetReservationsByCustomer(int customerId);
+
+    public interface IReservationRepository : IRepository<Reservation>
+    {
+        Task<List<Reservation>> GetReservationsByCustomer(int customerId);
+
+    }
 }

@@ -1,18 +1,36 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+
+using Microsoft.Extensions.DependencyInjection;
+
 using RestaurantReservation.Db;
 using RestaurantReservation.Db.Data;
+
 
 namespace RestaurantReservation;
 
 internal class Program
 {
     static void Main(string[] args)
+
+
+namespace RestaurantReservation;
+    public class Program
+
     {
       using (var dbContext = new RestaurantReservationDbContext())
         {
+
            /* var reservationsFromView = dbContext.ReservationsDetailsView.ToList();
 
+
+            var reservationsFromView = dbContext.ReservationsDetailsView.ToList();
+
+
             foreach (var reservation in reservationsFromView)
+
+
+            using (var dbContext = new RestaurantReservationDbContext())
+
             {
                 Console.WriteLine($"Reservation ID: {reservation.ReservationId}");
                 Console.WriteLine($"Reservation Date: {reservation.ReservationDate}");
@@ -55,9 +73,14 @@ internal class Program
                }
             */
 
+
+
+                Console.WriteLine($"Total revenue for restaurant with ID {restaurantId}: {totalRevenue:C}");
+            }
+         */
+
             var serviceProvider = new ServiceCollection()
                .AddInfrastructureDependencies()
                .BuildServiceProvider();
         }
     }
-}

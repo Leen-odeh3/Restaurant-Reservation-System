@@ -26,6 +26,7 @@ public class RestaurantReservationDbContext : DbContext
                 .AddJsonFile("C:\\Users\\hp\\Desktop\\C#\\RestaurantReservation\\appsettings.json")
                 .Build();
 
+
             optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
         }
 
@@ -40,6 +41,39 @@ public class RestaurantReservationDbContext : DbContext
            .GetMethod(nameof(CalculateRestaurantTotalRevenue), new[] { typeof(int) })!)
        .HasName("CalculateTotalRevenue");
 
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Seed();
+            modelBuilder.Entity<ReservationDetails>().HasNoKey().ToView("ReservationsDetailsView");
+            modelBuilder.Entity<EmployeeDetails>().HasNoKey().ToView("EmployeeDetailsView");
+            modelBuilder
+           .HasDbFunction(typeof(RestaurantReservationDbContext)
+               .GetMethod(nameof(CalculateRestaurantTotalRevenue), new[] { typeof(int) })!)
+           .HasName("CalculateTotalRevenue");
+
+
+
+            new EmployeeConfiguration().Configure(modelBuilder.Entity<Employee>());
+            new OrderConfiguration().Configure(modelBuilder.Entity<Order>());
+            new OrderItemConfiguration().Configure(modelBuilder.Entity<OrderItem>());
+            new TableConfiguration().Configure(modelBuilder.Entity<Table>());
+            new ReservationConfiguration().Configure(modelBuilder.Entity<Reservation>());
+            new RestaurantConfiguration().Configure(modelBuilder.Entity<Restaurant>());
+            new MenuItemConfiguration().Configure(modelBuilder.Entity<MenuItem>());
+
+        }
+
+        public decimal CalculateRestaurantTotalRevenue(int restaurantId)
+        {
+            var restaurant = Restaurants
+                .Include(r => r.Reservations)!
+                .ThenInclude(r => r.Orders)!
+                .ThenInclude(o => o.OrderItems)
+                .ThenInclude(oi => oi.MenuItem)
+                .AsSplitQuery()
+                .FirstOrDefault(r => r.RestaurantId == restaurantId);
+
         new EmployeeConfiguration().Configure(modelBuilder.Entity<Employee>());
         new OrderConfiguration().Configure(modelBuilder.Entity<Order>());
         new OrderItemConfiguration().Configure(modelBuilder.Entity<OrderItem>());
@@ -48,6 +82,7 @@ public class RestaurantReservationDbContext : DbContext
         new RestaurantConfiguration().Configure(modelBuilder.Entity<Restaurant>());
         new MenuItemConfiguration().Configure(modelBuilder.Entity<MenuItem>());
     }
+
 
     public decimal CalculateRestaurantTotalRevenue(int restaurantId)
     {
@@ -61,6 +96,16 @@ public class RestaurantReservationDbContext : DbContext
         if (restaurant is null)
         {
             throw new NotFoundException<Restaurant>($"Restaurant with id {restaurantId} not found.");
+
+
+            var totalRevenue = restaurant?.Reservations
+                ?.SelectMany(r => r.Orders)
+                ?.SelectMany(o => o.OrderItems)
+                ?.Sum(m => m.MenuItem.Price * m.Quantity) ?? 0;
+
+
+            return totalRevenue;
+
         }
 
         var totalRevenue = restaurant.Reservations!
