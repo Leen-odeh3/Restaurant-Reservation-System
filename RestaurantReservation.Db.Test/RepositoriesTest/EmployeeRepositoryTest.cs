@@ -8,7 +8,6 @@ using RestaurantReservation.Db.Enums;
 using RestaurantReservation.Db.Repositories;
 
 namespace RestaurantReservation.Db.Test.RepositoriesTest;
-
 public class EmployeeRepositoryTest
 {
     private readonly DbContextOptions<RestaurantReservationDbContext> _options;

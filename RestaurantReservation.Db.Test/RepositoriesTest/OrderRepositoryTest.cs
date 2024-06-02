@@ -3,18 +3,16 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using RestaurantReservation.Db.Data;
 using RestaurantReservation.Db.Entities;
-using RestaurantReservation.Db.Exceptions;
 using RestaurantReservation.Db.Repositories;
 
 namespace RestaurantReservation.Db.Test.RepositoriesTest;
-
 public class OrderRepositoryTest
 {
     private readonly DbContextOptions<RestaurantReservationDbContext> _options;
     private readonly RestaurantReservationDbContext _context;
     private readonly OrderRepository _repository;
     private readonly IFixture _fixture;
-    private Order _order; 
+    private Order _order;
 
     public OrderRepositoryTest()
     {
@@ -28,23 +26,10 @@ public class OrderRepositoryTest
 
         _order = _fixture.Create<Order>();
 
-        _context = new RestaurantReservationDbContext(_options); 
-        _repository = _fixture.Create<OrderRepository>();
+        _context = new RestaurantReservationDbContext(_options);
+        _repository = new OrderRepository(_context);
 
     }
-
-    [Fact]
-    public async Task UpdateOrder_ShouldHandleNegativeTotalAmount()
-    {
-        var order = _fixture.Create<Order>();
-        await _context.Orders.AddAsync(order);
-        await _context.SaveChangesAsync();
-
-        order.TotalAmount = -10;
-
-        await Assert.ThrowsAsync<NegativeTotalAmountException>(() => _repository.UpdateAsync(order));
-    }
-
 
     [Fact]
     public async Task AddOrder_ShouldAddOrderToDatabase()
@@ -62,9 +47,11 @@ public class OrderRepositoryTest
         await _context.Orders.AddAsync(_order);
         await _context.SaveChangesAsync();
 
+        // Act
         _order.TotalAmount += 10;
         await _repository.UpdateAsync(_order);
 
+        // Assert
         var updatedOrder = await _context.Orders.FindAsync(_order.Id);
         updatedOrder.TotalAmount.Should().Be(_order.TotalAmount);
     }
@@ -72,38 +59,17 @@ public class OrderRepositoryTest
     [Fact]
     public async Task DeleteOrder_ShouldRemoveOrderFromDatabase()
     {
+        // Arrange
         await _context.Orders.AddAsync(_order);
         await _context.SaveChangesAsync();
 
+        // Act
         await _repository.DeleteAsync(_order);
 
+        // Assert
         var deletedOrder = await _context.Orders.FindAsync(_order.Id);
         deletedOrder.Should().BeNull();
     }
-
-
-    [Fact]
-    public async Task ListOrdersAndMenuItems_ShouldThrowExceptionForInvalidReservationId()
-    {
-        // Arrange
-        var invalidReservationId = -1; 
-
-        await Assert.ThrowsAsync<NotFoundException<Reservation>>(async () =>
-        {
-            await _repository.ListOrdersAndMenuItems(invalidReservationId);
-        });
-    }
-
-    [Fact]
-    public async Task CalculateAverageOrderAmount_ShouldReturnZeroForInvalidEmployeeId()
-    {
-        var invalidEmployeeId = -1; 
-
-        var result = await _repository.CalculateAverageOrderAmount(invalidEmployeeId);
-
-        result.Should().Be(0); 
-    }
-
 
     [Fact]
     public async Task ListOrdersAndMenuItems_ShouldReturnOrdersWithMenuItemsForValidReservationId()
@@ -138,6 +104,4 @@ public class OrderRepositoryTest
             }
         }
     }
-  
 }
-

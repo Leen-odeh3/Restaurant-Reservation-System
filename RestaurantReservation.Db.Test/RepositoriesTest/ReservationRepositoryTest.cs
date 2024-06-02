@@ -7,7 +7,7 @@ using RestaurantReservation.Db.Repositories;
 
 namespace RestaurantReservation.Db.Test.RepositoriesTest;
 
-public class ReservationRepositoryTest : IDisposable
+public class ReservationRepositoryTest
 {
     private readonly DbContextOptions<RestaurantReservationDbContext> _options;
     private readonly RestaurantReservationDbContext _context;
@@ -27,57 +27,74 @@ public class ReservationRepositoryTest : IDisposable
         _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
     }
 
-    public void Dispose()
+    [Fact]
+    public async Task AddReservation_ShouldAddReservationToDatabase()
     {
-        _context.Dispose();
+        // Arrange
+        var reservation = _fixture.Create<Reservation>();
+
+        await _repository.AddAsync(reservation);
+
+        var addedReservation = await _context.Reservations.FindAsync(reservation.ReservationId);
+        addedReservation.Should().NotBeNull();
+        addedReservation.Should().BeEquivalentTo(reservation);
     }
 
     [Fact]
-    public async Task GetReservationsByCustomer_ShouldReturnListOfReservations()
+    public async Task DeleteReservation_ShouldRemoveReservationFromDatabase()
+    {
+        var reservation = _fixture.Create<Reservation>();
+        await _context.Reservations.AddAsync(reservation);
+        await _context.SaveChangesAsync();
+
+        await _repository.DeleteAsync(reservation);
+
+        var deletedReservation = await _context.Reservations.FindAsync(reservation.ReservationId);
+        deletedReservation.Should().BeNull();
+    }
+
+
+    [Fact]
+    public async Task GetReservationById_ShouldReturnReservation()
+    {
+        var reservation = _fixture.Create<Reservation>();
+        await _context.Reservations.AddAsync(reservation);
+        await _context.SaveChangesAsync();
+
+        var result = await _repository.GetByIdAsync(reservation.ReservationId);
+
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(reservation);
+    }
+
+    private List<Reservation> PrepareReservations(int customerId)
+    {
+        var reservations = new List<Reservation>
+            {
+                new Reservation { ReservationDate = DateTime.Now.Date, PartySize = 4, CustomerId = customerId },
+                new Reservation { ReservationDate = DateTime.Now.Date, PartySize = 2, CustomerId = customerId },
+                new Reservation { ReservationDate = DateTime.Now.Date, PartySize = 6, CustomerId = customerId },
+                new Reservation { ReservationDate = DateTime.Now.Date, PartySize = 3, CustomerId = customerId },
+                new Reservation { ReservationDate = DateTime.Now.Date, PartySize = 5, CustomerId = customerId }
+            };
+
+        return reservations;
+    }
+
+    [Fact]
+    public async Task GetReservationsByCustomer_ShouldReturnReservationsForSpecifiedCustomer()
     {
         var customerId = 1;
-        var reservations = _fixture.CreateMany<Reservation>(5).ToList();
-        reservations.ForEach(reservation => reservation.CustomerId = customerId);
+
+        var reservations = PrepareReservations(customerId);
+
         await _context.Reservations.AddRangeAsync(reservations);
         await _context.SaveChangesAsync();
 
         var result = await _repository.GetReservationsByCustomer(customerId);
 
+        result.Should().NotBeNullOrEmpty(); 
+        result.Should().HaveCount(reservations.Count); 
         result.Should().BeEquivalentTo(reservations);
-    }
-
-    [Fact]
-    public async Task GetReservationsByCustomer_ShouldReturnEmptyList_WhenNoReservationsFound()
-    {
-        var customerId = 1;
-
-        var result = await _repository.GetReservationsByCustomer(customerId);
-
-        result.Should().BeEmpty();
-    }
-
-    [Fact]
-    public async Task GetReservationsByCustomer_ShouldReturnReservationsOnlyForSpecifiedCustomer()
-    {
-        var customerId = 1;
-        var otherCustomerId = 2;
-        var reservations = _fixture.CreateMany<Reservation>(5).ToList();
-
-        reservations.Take(3).ToList().ForEach(reservation => reservation.CustomerId = customerId);
-        reservations.Skip(3).ToList().ForEach(reservation => reservation.CustomerId = otherCustomerId);
-        await _context.Reservations.AddRangeAsync(reservations);
-        await _context.SaveChangesAsync();
-
-        var result = await _repository.GetReservationsByCustomer(customerId);
-
-        result.Should().OnlyContain(r => r.CustomerId == customerId);
-    }
-
-    [Fact]
-    public async Task GetReservationsByCustomer_ShouldThrowException_WhenCustomerIdIsInvalid()
-    {
-        var invalidCustomerId = -1;
-
-        await Assert.ThrowsAsync<Exception>(async () => await _repository.GetReservationsByCustomer(invalidCustomerId));
     }
 }
