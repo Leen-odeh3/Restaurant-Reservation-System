@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using RestaurantReservation.Db.Configuration;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Exceptions;
 using RestaurantReservation.Db.Extensions;
@@ -31,6 +32,15 @@ namespace RestaurantReservation.Db.Data
            .HasDbFunction(typeof(RestaurantReservationDbContext)
                .GetMethod(nameof(CalculateRestaurantTotalRevenue), new[] { typeof(int) })!)
            .HasName("CalculateTotalRevenue");
+
+
+            new EmployeeConfiguration().Configure(modelBuilder.Entity<Employee>());
+            new OrderConfiguration().Configure(modelBuilder.Entity<Order>());
+            new OrderItemConfiguration().Configure(modelBuilder.Entity<OrderItem>());
+            new TableConfiguration().Configure(modelBuilder.Entity<Table>());
+            new ReservationConfiguration().Configure(modelBuilder.Entity<Reservation>());
+            new RestaurantConfiguration().Configure(modelBuilder.Entity<Restaurant>());
+            new MenuItemConfiguration().Configure(modelBuilder.Entity<MenuItem>());
         }
 
         public decimal CalculateRestaurantTotalRevenue(int restaurantId)
