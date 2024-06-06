@@ -20,7 +20,7 @@ namespace RestaurantReservation.Db.Repositories
             .Include(r => r.Orders)
             .ThenInclude(o => o.OrderItems)
             .ThenInclude(oi => oi.MenuItem)
-            .AsSplitQuery() 
+            .AsSplitQuery()
             .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
 
             if (reservation is null)

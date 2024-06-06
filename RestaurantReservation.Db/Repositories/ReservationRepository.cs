@@ -14,7 +14,6 @@ namespace RestaurantReservation.Db.Repositories
         public ReservationRepository(RestaurantReservationDbContext context) : base(context)
         {
         }
-
         public async Task<List<Reservation>> GetReservationsByCustomer(int customerId)
         {
 
